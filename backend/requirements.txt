@@ -6,6 +6,8 @@ scikit-learn
 joblib
 fastapi
 uvicorn
+
+old
 python scripts/data_preprocessing.py
 python scripts/train_model.py
 python scripts/predict.py
@@ -13,5 +15,10 @@ uvicorn scripts.api:app --reload
 python scripts/test_model.py    
 python scripts/visualize_trends.py
 
+new 
+python scripts/preprocess_data.py   
+python scripts/predict.py 
+python scripts/train_models.py
+python scripts/predict_with_graph.py
 
 
