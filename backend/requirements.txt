@@ -6,6 +6,7 @@ scikit-learn
 joblib
 fastapi
 uvicorn
+xgboost
 
 old
 python scripts/data_preprocessing.py

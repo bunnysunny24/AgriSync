@@ -1,8 +1,8 @@
 import pandas as pd
 import joblib
 import os
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import TimeSeriesSplit
+from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
 
 # Define processed file paths
@@ -23,19 +23,35 @@ for crop, path in processed_files.items():
         # Convert date column to numerical format (number of days since first date)
         data["Reported Date"] = pd.to_datetime(data["Reported Date"])
         data["Days"] = (data["Reported Date"] - data["Reported Date"].min()).dt.days
+        data["Month"] = data["Reported Date"].dt.month  # ✅ Capture seasonality
+
+        # ✅ Use a larger rolling window (30 days)
+        if "Rolling_Modal_Price" not in data.columns:
+            data["Rolling_Modal_Price"] = data["Modal Price (Rs./Quintal)"].rolling(window=30, min_periods=1).mean()
+
+        # ✅ Add Lag Features (Past 1 month, 2 months)
+        data["Lag_1_Month"] = data["Modal Price (Rs./Quintal)"].shift(30).fillna(method="bfill")
+        data["Lag_2_Months"] = data["Modal Price (Rs./Quintal)"].shift(60).fillna(method="bfill")
+
+        # ✅ Calculate Price Change Rate
+        data["Price_Change_Rate"] = data["Modal Price (Rs./Quintal)"].pct_change().fillna(0)
 
         # Select Features & Target
-        features = ["Days", "Arrivals (Tonnes)", "Min Price (Rs./Quintal)", "Max Price (Rs./Quintal)", "Price Range", "Demand Indicator"]
+        features = ["Days", "Month", "Arrivals (Tonnes)", "Min Price (Rs./Quintal)", "Max Price (Rs./Quintal)", 
+                    "Price Range", "Demand Indicator", "Rolling_Modal_Price", "Lag_1_Month", "Lag_2_Months", "Price_Change_Rate"]
         target = "Modal Price (Rs./Quintal)"
 
         X = data[features]
         y = data[target]
 
-        # Train-test split
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        # ✅ Use Time Series Cross Validation instead of train_test_split
+        tscv = TimeSeriesSplit(n_splits=5)
+        for train_index, test_index in tscv.split(X):
+            X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+            y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-        # Train model
-        model = RandomForestRegressor(n_estimators=100, random_state=42)
+        # Train model using XGBoost
+        model = XGBRegressor(n_estimators=300, learning_rate=0.03, objective="reg:squarederror", random_state=42)
         model.fit(X_train, y_train)
 
         # Evaluate model
