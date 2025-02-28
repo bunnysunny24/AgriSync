@@ -1,0 +1,17 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+joblib
+fastapi
+uvicorn
+python scripts/data_preprocessing.py
+python scripts/train_model.py
+python scripts/predict.py
+uvicorn scripts.api:app --reload
+python scripts/test_model.py    
+python scripts/visualize_trends.py
+
+
+
