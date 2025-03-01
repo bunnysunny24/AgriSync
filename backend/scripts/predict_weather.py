@@ -11,7 +11,7 @@ future_dates = [datetime.now() + timedelta(days=i) for i in range(1, 8)]
 future_days = [(date - datetime.now()).days for date in future_dates]
 
 # ✅ Use Median Values for Other Features
-df = pd.read_csv("weather_data/historical_weather.csv")
+df = pd.read_csv("data/historical_weather.csv")
 median_temp = df["Temperature (°C)"].median()
 median_humidity = df["Humidity (%)"].median()
 median_wind_speed = df["Wind Speed (m/s)"].median()

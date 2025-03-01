@@ -1,9 +1,10 @@
-Date,Temperature (°C),Humidity (%),Wind Speed (m/s),Pressure (hPa)
-2024-02-20,15,60,3,1012
-2024-02-21,16,58,2.5,1010
-2024-02-22,17,55,3.2,1011
-2024-02-23,14,65,4,1009
-2024-02-24,18,52,2.8,1013
-2024-02-25,20,50,3.5,1015
-2024-02-26,21,48,2.9,1012
+Date,City,Temperature (°C),Humidity (%),Wind Speed (m/s),Pressure (hPa),Weather Condition,Description
+2024-02-20,New Delhi,15,60,3,1012,Clear,clear sky
+2024-02-21,New Delhi,16,58,2.5,1010,Clouds,few clouds
+2024-02-22,New Delhi,17,55,3.2,1011,Clouds,scattered clouds
+2024-02-23,New Delhi,14,65,4,1009,Rain,light rain
+2024-02-24,New Delhi,18,52,2.8,1013,Clear,clear sky
+2024-02-25,New Delhi,20,50,3.5,1015,Clouds,overcast clouds
+2024-02-26,New Delhi,21,48,2.9,1012,Haze,haze
+2025-03-02,New Delhi,20.09,83,1.54,1013,Mist,mist
 2025-03-02,New Delhi,20.09,83,1.54,1013,Mist,mist

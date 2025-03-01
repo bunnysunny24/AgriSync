@@ -1,7 +1,7 @@
 import pandas as pd
 
 # ✅ Load Weather Data
-weather_df = pd.read_csv("weather_data/latest_weather.csv")
+weather_df = pd.read_csv("data\historical_weather.csv")
 weather = weather_df.iloc[0]
 
 # ✅ Alert System Logic
