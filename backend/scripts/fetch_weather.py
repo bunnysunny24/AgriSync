@@ -3,8 +3,8 @@ import os
 import pandas as pd
 from datetime import datetime
 
-# ✅ OpenWeatherMap API Key (Get yours from https://openweathermap.org/)
-API_KEY = "YOUR_API_KEY"
+# ✅ OpenWeatherMap API Key
+API_KEY = #"972c0e29b63fc85cd2fc3e1a945d8111"
 CITY = "New Delhi"
 URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
 
@@ -40,4 +40,4 @@ def get_weather():
 
 # ✅ Run the function
 if __name__ == "__main__":
-    print(get_weather())
+    get_weather()

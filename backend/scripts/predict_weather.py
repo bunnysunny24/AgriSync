@@ -17,7 +17,7 @@ median_humidity = df["Humidity (%)"].median()
 median_wind_speed = df["Wind Speed (m/s)"].median()
 median_pressure = df["Pressure (hPa)"].median()
 
-# ✅ Prepare Input Data
+# ✅ Prepare Input Data (Ensure Features Match Training)
 input_data = pd.DataFrame({
     "Days": future_days,
     "Temperature (°C)": [median_temp] * 7,

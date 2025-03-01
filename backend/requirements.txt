@@ -20,5 +20,13 @@ python scripts/preprocess_plantdoc.py
 python scripts/train_plantdoc_model.py
 python scripts/predict_plantdoc.py
 
+for wheather
+python scripts/fetch_weather.py
+python scripts/weather_alerts.py
+python scripts/train_weather_model.py
+python scripts/predict_weather.py
+
+
+
 
 
