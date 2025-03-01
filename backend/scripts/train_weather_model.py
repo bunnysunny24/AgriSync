@@ -6,7 +6,7 @@ import joblib
 import os
 
 # ✅ Load Historical Weather Data
-df = pd.read_csv("weather_data/historical_weather.csv")
+df = pd.read_csv("data/historical_weather.csv")
 
 # ✅ Convert Date to Numerical Format
 df["Date"] = pd.to_datetime(df["Date"])
