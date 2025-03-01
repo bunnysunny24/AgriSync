@@ -17,9 +17,9 @@ python scripts/test_model.py
 python scripts/visualize_trends.py
 
 new 
-python scripts/preprocess_data.py   
-python scripts/predict.py 
+python scripts/preprocess_data.py  
 python scripts/train_models.py
+python scripts/predict.py 
 python scripts/predict_with_graph.py
 
 
