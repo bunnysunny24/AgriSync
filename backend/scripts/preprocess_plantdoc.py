@@ -1,32 +1,23 @@
-import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-# Define dataset paths
-TRAIN_DIR = "PlantDoc-Dataset/train"
-TEST_DIR = "PlantDoc-Dataset/test"
-
-# Image preprocessing & augmentation
-datagen = ImageDataGenerator(
-    rescale=1.0/255,  # Normalize pixel values
-    validation_split=0.2,  # 80% training, 20% validation split
+# Add Data Augmentation
+train_datagen = ImageDataGenerator(
+    rescale=1.0/255,
+    rotation_range=30,  # Randomly rotate images
+    width_shift_range=0.2,  # Shift images horizontally
+    height_shift_range=0.2,  # Shift images vertically
+    shear_range=0.2,  # Shear transformation
+    zoom_range=0.2,  # Random zoom
+    horizontal_flip=True,  # Flip images horizontally
+    fill_mode="nearest"
 )
 
-# Load training images
-train_data = datagen.flow_from_directory(
-    TRAIN_DIR,
-    target_size=(128, 128),
-    batch_size=32,
-    class_mode="categorical",
-    subset="training"
-)
+val_datagen = ImageDataGenerator(rescale=1.0/255)  # Only rescale validation images
 
-# Load validation images
-val_data = datagen.flow_from_directory(
-    TRAIN_DIR,
-    target_size=(128, 128),
-    batch_size=32,
-    class_mode="categorical",
-    subset="validation"
+# Load Train & Validation Data
+train_data = train_datagen.flow_from_directory(
+    "PlantDoc-Dataset/train", target_size=(224, 224), batch_size=32, class_mode="categorical"
 )
-
-print(f"✅ Data loaded! Classes: {train_data.class_indices}")
+val_data = val_datagen.flow_from_directory(
+    "PlantDoc-Dataset/test", target_size=(224, 224), batch_size=32, class_mode="categorical"
+)
