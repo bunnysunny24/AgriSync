@@ -53,5 +53,5 @@ def predict_disease(image_path):
         print(f"❌ Error: {e}")
 
 # ✅ Example usage (Fix path issue)
-image_path = r"PlantDoc-Dataset\trial_image.jpg"  # Use raw string or forward slashes
+image_path = r"PlantDoc-Dataset\trial_image1.jpg"  # Use raw string or forward slashes
 predict_disease(image_path)
