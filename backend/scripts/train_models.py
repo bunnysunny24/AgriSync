@@ -20,21 +20,15 @@ for crop, path in processed_files.items():
         # Load dataset
         data = pd.read_csv(path)
 
-        # Convert date column to numerical format (number of days since first date)
+        # ✅ Skip training if dataset is empty
+        if data.empty:
+            print(f"⚠️ Warning: {crop.capitalize()} dataset is empty. Skipping training.")
+            continue
+
+        # Convert date column to numerical format
         data["Reported Date"] = pd.to_datetime(data["Reported Date"])
         data["Days"] = (data["Reported Date"] - data["Reported Date"].min()).dt.days
-        data["Month"] = data["Reported Date"].dt.month  # ✅ Capture seasonality
-
-        # ✅ Use a larger rolling window (30 days)
-        if "Rolling_Modal_Price" not in data.columns:
-            data["Rolling_Modal_Price"] = data["Modal Price (Rs./Quintal)"].rolling(window=30, min_periods=1).mean()
-
-        # ✅ Add Lag Features (Past 1 month, 2 months)
-        data["Lag_1_Month"] = data["Modal Price (Rs./Quintal)"].shift(30).fillna(method="bfill")
-        data["Lag_2_Months"] = data["Modal Price (Rs./Quintal)"].shift(60).fillna(method="bfill")
-
-        # ✅ Calculate Price Change Rate
-        data["Price_Change_Rate"] = data["Modal Price (Rs./Quintal)"].pct_change().fillna(0)
+        data["Month"] = data["Reported Date"].dt.month
 
         # Select Features & Target
         features = ["Days", "Month", "Arrivals (Tonnes)", "Min Price (Rs./Quintal)", "Max Price (Rs./Quintal)", 
@@ -44,11 +38,17 @@ for crop, path in processed_files.items():
         X = data[features]
         y = data[target]
 
-        # ✅ Use Time Series Cross Validation instead of train_test_split
-        tscv = TimeSeriesSplit(n_splits=5)
-        for train_index, test_index in tscv.split(X):
-            X_train, X_test = X.iloc[train_index], X.iloc[test_index]
-            y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+        # ✅ Adjust TimeSeriesSplit to avoid failure
+        n_splits = min(6, len(X) - 1)  # Avoid more splits than available rows
+        if n_splits < 2:
+            print(f"⚠️ Warning: Not enough data for time-series split in {crop}. Using simple train-test split.")
+            X_train, X_test = X.iloc[:-1], X.iloc[-1:]
+            y_train, y_test = y.iloc[:-1], y.iloc[-1:]
+        else:
+            tscv = TimeSeriesSplit(n_splits=n_splits)
+            for train_index, test_index in tscv.split(X):
+                X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+                y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
         # Train model using XGBoost
         model = XGBRegressor(n_estimators=300, learning_rate=0.03, objective="reg:squarederror", random_state=42)

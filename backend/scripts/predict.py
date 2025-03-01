@@ -12,66 +12,83 @@ models = {
     "carrot": "models/carrot_model.pkl"
 }
 
-def predict_price(crop, arrivals, min_price, max_price, days_ahead=35):
-    try:
-        print(f"\n📊 Predicting prices for {crop.capitalize()}...")
+# Define the exact feature order used during training
+FEATURE_NAMES = [
+    "Days", "Month", "Arrivals (Tonnes)", "Min Price (Rs./Quintal)", "Max Price (Rs./Quintal)",
+    "Price Range", "Demand Indicator", "Rolling_Modal_Price", "Lag_1_Month", "Lag_2_Months", "Price_Change_Rate"
+]
 
+def predict_future_prices(crop, weeks_ahead=5):
+    try:
         # Load model
         model = joblib.load(models[crop])
 
         # Load processed data
         data = pd.read_csv(f"processed_data/{crop}_processed.csv")
-        data["Reported Date"] = pd.to_datetime(data["Reported Date"])
+        data["Reported Date"] = pd.to_datetime(data["Reported Date"])  # Convert to datetime
+        
+        # Handle missing dates
+        last_date = data["Reported Date"].dropna().max()
+        last_day_num = (last_date - data["Reported Date"].min()).days
 
-        latest_date = data["Reported Date"].max()
-        first_date = data["Reported Date"].min()
-        last_day_num = (latest_date - first_date).days
+        # Generate future dates
+        future_dates = [last_date + timedelta(weeks=i) for i in range(1, weeks_ahead + 1)]
+        future_days = np.array([last_day_num + (i * 7) for i in range(1, weeks_ahead + 1)])
 
-        # ✅ Generate future dates
-        future_dates = [latest_date + timedelta(days=i) for i in range(1, days_ahead + 1)]
-        future_days = np.array([last_day_num + i for i in range(1, days_ahead + 1)])
-        future_months = np.array([date.month for date in future_dates])
-
-        # Use median values for other features
+        # Use median values for numerical features but introduce small variations
         arrivals_median = data["Arrivals (Tonnes)"].median()
         min_price_median = data["Min Price (Rs./Quintal)"].median()
         max_price_median = data["Max Price (Rs./Quintal)"].median()
         price_range_median = max_price_median - min_price_median
         demand_indicator_median = arrivals_median / (min_price_median + 1)
 
-        # ✅ Use most recent rolling price and lag prices
-        rolling_modal_price = data["Rolling_Modal_Price"].iloc[-1]
-        lag_1_month = data["Lag_1_Month"].iloc[-1]
-        lag_2_months = data["Lag_2_Months"].iloc[-1]
-        price_change_rate = data["Price_Change_Rate"].iloc[-1]
+        rolling_price_median = data["Rolling_Modal_Price"].median()
+        lag_1_month_median = data["Lag_1_Month"].median()
+        lag_2_months_median = data["Lag_2_Months"].median()
+        price_change_rate_median = data["Price_Change_Rate"].median()
 
-        # Prepare input data
-        feature_names = ["Days", "Month", "Arrivals (Tonnes)", "Min Price (Rs./Quintal)", "Max Price (Rs./Quintal)", 
-                         "Price Range", "Demand Indicator", "Rolling_Modal_Price", "Lag_1_Month", "Lag_2_Months", "Price_Change_Rate"]
+        # ✅ Introduce Variations in Demand & Price Change for More Dynamic Predictions
+        demand_variation = np.linspace(0.95, 1.05, weeks_ahead)  # Small fluctuations over time
+        price_change_variation = np.linspace(-0.02, 0.02, weeks_ahead)  # Price change rate variation
 
+        # Prepare input data with realistic future trends
         input_data = pd.DataFrame({
             "Days": future_days,
-            "Month": future_months,
-            "Arrivals (Tonnes)": [arrivals_median] * days_ahead,
-            "Min Price (Rs./Quintal)": [min_price_median] * days_ahead,
-            "Max Price (Rs./Quintal)": [max_price_median] * days_ahead,
-            "Price Range": [price_range_median] * days_ahead,
-            "Demand Indicator": [demand_indicator_median] * days_ahead,
-            "Rolling_Modal_Price": [rolling_modal_price] * days_ahead,
-            "Lag_1_Month": [lag_1_month] * days_ahead,
-            "Lag_2_Months": [lag_2_months] * days_ahead,
-            "Price_Change_Rate": [price_change_rate] * days_ahead
-        }, columns=feature_names)
+            "Month": [d.month for d in future_dates],  # Extract month from future dates
+            "Arrivals (Tonnes)": arrivals_median * demand_variation,  # Apply demand variation
+            "Min Price (Rs./Quintal)": min_price_median * demand_variation,
+            "Max Price (Rs./Quintal)": max_price_median * demand_variation,
+            "Price Range": price_range_median * demand_variation,
+            "Demand Indicator": demand_indicator_median * demand_variation,
+            "Rolling_Modal_Price": rolling_price_median * demand_variation,
+            "Lag_1_Month": lag_1_month_median * demand_variation,
+            "Lag_2_Months": lag_2_months_median * demand_variation,
+            "Price_Change_Rate": price_change_rate_median + price_change_variation  # Apply change variation
+        }, columns=FEATURE_NAMES)  # ✅ Ensure correct feature order
 
+        # Predict future prices (in Rs./Quintal)
         predicted_prices = model.predict(input_data)
 
-        print(f"\n📊 Predicted Prices for {crop.capitalize()} for Next 5 Weeks:")
-        for i in range(0, days_ahead, 7):
-            print(f"{future_dates[i].strftime('%Y-%m-%d')}: {predicted_prices[i]:.2f} Rs./Kg")
+        # ✅ Convert Predictions to Correct Units
+        if crop == "banana":
+            # Convert Rs./Quintal → Rs./Kg → Rs./Dozen (1.5 Kg per dozen)
+            predicted_prices_per_kg = predicted_prices / 100  
+            predicted_prices_per_dozen = predicted_prices_per_kg * 1.5  
+        else:
+            # Convert Rs./Quintal → Rs./Kg
+            predicted_prices_per_kg = predicted_prices / 100  
+
+        # Print Results
+        print(f"\n📊 Predicted Prices for {crop.capitalize()} for Next {weeks_ahead} Weeks:")
+        for i in range(weeks_ahead):
+            if crop == "banana":
+                print(f"{future_dates[i].strftime('%Y-%m-%d')}: {predicted_prices_per_dozen[i]:.2f} Rs./Dozen")
+            else:
+                print(f"{future_dates[i].strftime('%Y-%m-%d')}: {predicted_prices_per_kg[i]:.2f} Rs./Kg")
 
     except Exception as e:
         print(f"❌ Error predicting prices for {crop}: {e}")
 
-# Run predictions
+# Run Predictions for All Crops
 for crop in models.keys():
-    predict_price(crop, arrivals=100, min_price=2000, max_price=2500, days_ahead=35)
+    predict_future_prices(crop, weeks_ahead=5)
