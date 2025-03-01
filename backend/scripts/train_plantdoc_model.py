@@ -1,28 +1,22 @@
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-import preprocess_plantdoc  # Import preprocessed dataset
+import preprocess_plantdoc  # Load dataset
 
-# Build Improved CNN Model
-model = Sequential([
-    Conv2D(32, (3, 3), activation="relu", input_shape=(128, 128, 3)),
-    BatchNormalization(),
-    MaxPooling2D(2, 2),
+# Load Pre-trained MobileNetV2
+base_model = MobileNetV2(weights="imagenet", include_top=False, input_shape=(128, 128, 3))
+base_model.trainable = False  # Freeze pre-trained layers
 
-    Conv2D(64, (3, 3), activation="relu"),
-    BatchNormalization(),
-    MaxPooling2D(2, 2),
+# Add Custom Layers (Fix: Use base_model.output)
+x = GlobalAveragePooling2D()(base_model.output)
+x = Dense(128, activation="relu")(x)
+x = Dropout(0.3)(x)  # Helps reduce overfitting
+outputs = Dense(len(preprocess_plantdoc.train_data.class_indices), activation="softmax")(x)
 
-    Conv2D(128, (3, 3), activation="relu"),
-    BatchNormalization(),
-    MaxPooling2D(2, 2),
-
-    Flatten(),
-    Dense(256, activation="relu"),
-    Dropout(0.5),
-    Dense(len(preprocess_plantdoc.train_data.class_indices), activation="softmax")  # Output layer for classification
-])
+# Fix: Ensure outputs are KerasTensors
+model = Model(inputs=base_model.input, outputs=outputs)
 
 # Compile Model
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
@@ -35,10 +29,10 @@ reduce_lr = ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=3, min_lr
 model.fit(
     preprocess_plantdoc.train_data,
     validation_data=preprocess_plantdoc.val_data,
-    epochs=30,
+    epochs=15,
     callbacks=[early_stopping, reduce_lr]
 )
 
 # Save Model
-model.save("models/plantdoc_model.h5")
-print("✅ Improved Model trained and saved!")
+model.save("models/plantdoc_mobilenet.keras")
+print("✅ Model trained using MobileNetV2 and saved!")
