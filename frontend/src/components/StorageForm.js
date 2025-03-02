@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerStorage, updateAvailability, getFarmerSlots } from "../../../backend/blockchain/web3";
+import { registerStorage, updateAvailability, getFarmerSlots } from "./web3";
 
 const StorageForm = () => {
     const [capacity, setCapacity] = useState("");
