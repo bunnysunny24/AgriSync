@@ -1,3 +1,5 @@
+cd backend
+
 pandas
 numpy
 matplotlib
@@ -25,6 +27,10 @@ python scripts/fetch_weather.py
 python scripts/train_weather_model.py
 python scripts/predict_weather.py
 python scripts/weather_alerts.py
+
+for blockchain
+go to cd frontend
+npm start
 
 
 
