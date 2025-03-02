@@ -32,7 +32,7 @@ for blockchain
 go to cd frontend
 npm start
 truffle compile
-truffle migrate --reset
+truffle migrate --reset --network development
 
 
 
