@@ -6,21 +6,27 @@ const StorageForm = () => {
     const [slotId, setSlotId] = useState("");
     const [available, setAvailable] = useState("");
     const [slots, setSlots] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // ✅ Fetch Farmer Slots on Load
-    useEffect(() => {
-        const fetchSlots = async () => {
-            try {
-                const userSlots = await getFarmerSlots();
-                if (userSlots && userSlots.length > 0) {
-                    setSlots(userSlots);
-                } else {
-                    console.warn("⚠️ No storage slots found!");
-                }
-            } catch (error) {
-                console.error("❌ Error fetching storage slots:", error);
+    // ✅ Fetch Farmer Slots on Load & After Update
+    const fetchSlots = async () => {
+        try {
+            setLoading(true);
+            const userSlots = await getFarmerSlots();
+            if (userSlots && userSlots.length > 0) {
+                setSlots(userSlots);
+            } else {
+                console.warn("⚠️ No storage slots found!");
+                setSlots([]);
             }
-        };
+        } catch (error) {
+            console.error("❌ Error fetching storage slots:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchSlots();
     }, []);
 
@@ -34,6 +40,7 @@ const StorageForm = () => {
             await registerStorage(Number(capacity));
             alert("✅ Storage Registered!");
             setCapacity(""); // Reset Input
+            fetchSlots(); // Refresh slot list
         } catch (error) {
             alert("❌ Registration Failed!");
             console.error("Error:", error);
@@ -42,7 +49,7 @@ const StorageForm = () => {
 
     // ✅ Update Storage Availability
     const handleUpdate = async () => {
-        if (!slotId || !available) {
+        if (!slotId || slotId < 0 || !available || available < 0) {
             alert("⚠️ Please enter valid slot ID and availability!");
             return;
         }
@@ -51,6 +58,7 @@ const StorageForm = () => {
             alert("✅ Storage Availability Updated!");
             setSlotId("");
             setAvailable("");
+            fetchSlots(); // Refresh slot list
         } catch (error) {
             alert("❌ Update Failed!");
             console.error("Error:", error);
@@ -87,7 +95,9 @@ const StorageForm = () => {
             <button onClick={handleUpdate}>Update</button>
 
             <h2>📋 Your Storage Slots</h2>
-            {slots.length > 0 ? (
+            {loading ? (
+                <p>⏳ Loading slots...</p>
+            ) : slots.length > 0 ? (
                 <ul>
                     {slots.map((slot, index) => (
                         <li key={index}>🆔 Slot ID: {slot}</li>
