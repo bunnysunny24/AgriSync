@@ -31,7 +31,8 @@ python scripts/weather_alerts.py
 for blockchain
 go to cd frontend
 npm start
-
+truffle compile
+truffle migrate --reset
 
 
 

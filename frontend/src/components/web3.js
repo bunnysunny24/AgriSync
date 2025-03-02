@@ -4,34 +4,8 @@ import Web3 from "web3";
 const web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
 
 // ✅ Smart Contract Address & ABI (Ensure it's deployed on Ganache)
-const contractAddress = "0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47"; // Update if needed
+const contractAddress = "0xfeFB25B99b119bCeaBAFA9952A64A1cD31b99248"; // Update if needed
 const abi = [
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "slotId",
-				"type": "uint256"
-			}
-		],
-		"name": "deactivateSlot",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "capacity",
-				"type": "uint256"
-			}
-		],
-		"name": "registerStorage",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
 	{
 		"anonymous": false,
 		"inputs": [
@@ -95,14 +69,9 @@ const abi = [
 				"internalType": "uint256",
 				"name": "slotId",
 				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "newAvailable",
-				"type": "uint256"
 			}
 		],
-		"name": "updateAvailability",
+		"name": "deactivateSlot",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -167,6 +136,19 @@ const abi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "capacity",
+				"type": "uint256"
+			}
+		],
+		"name": "registerStorage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -200,6 +182,24 @@ const abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "slotId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newAvailable",
+				"type": "uint256"
+			}
+		],
+		"name": "updateAvailability",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]; 
