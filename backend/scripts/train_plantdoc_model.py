@@ -22,7 +22,7 @@ train_data = datagen.flow_from_directory(
 )
 
 val_data = ImageDataGenerator(rescale=1.0 / 255).flow_from_directory(
-    directory="PlantDoc-Dataset/val",
+    directory="PlantDoc-Dataset/test",
     target_size=(224, 224),
     batch_size=32,
     class_mode="categorical"
