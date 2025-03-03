@@ -51,11 +51,14 @@ model.compile(
 )
 
 # ✅ Step 5: Apply Learning Rate Warm-up & Cosine Decay
+# ✅ Fix: Ensure Learning Rate is a Valid Float
 def scheduler(epoch, lr):
     if epoch < 5:
-        return lr * 1.2  # Warm-up
+        return float(lr * 1.2)  # Warm-up phase
     else:
-        return lr * tf.math.exp(-0.1)  # Cosine decay
+        new_lr = float(lr * tf.math.exp(-0.1).numpy())  # Cosine decay
+        return max(new_lr, 1e-6)  # Prevent learning rate from going too low
+
 
 lr_callback = tf.keras.callbacks.LearningRateScheduler(scheduler)
 
