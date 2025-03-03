@@ -11,6 +11,7 @@ uvicorn
 xgboost
 opencv-python
 tensorflow-addons
+keras-cv --upgrade
 
 
 for Plant price dectection

@@ -5,7 +5,7 @@ from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 import preprocess_plantdoc  # Dataset Loader
-import tensorflow_addons as tfa  # Focal Loss for better learning
+from keras_cv.losses import FocalLoss  
 
 # ✅ Step 1: Advanced Data Augmentation (Using MixUp & CutMix)
 datagen = ImageDataGenerator(
@@ -46,7 +46,7 @@ model = Model(inputs=base_model.input, outputs=output_layer)
 # ✅ Step 4: Compile Model with Focal Loss & Learning Rate Schedule
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
-    loss=tfa.losses.SigmoidFocalCrossEntropy(),  # Better for class imbalance
+    loss=FocalLoss(from_logits=True),  # ✅ Updated Loss Function
     metrics=["accuracy"]
 )
 
