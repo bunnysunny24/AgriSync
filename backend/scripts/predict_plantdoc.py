@@ -6,7 +6,7 @@ import preprocess_plantdoc  # Load class labels
 import os
 
 # Load trained model
-MODEL_PATH = "models/plantdoc_mobilenet.keras"
+MODEL_PATH = "models/plantdoc_optimized.keras"
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # Get class labels

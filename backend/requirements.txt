@@ -10,6 +10,8 @@ fastapi
 uvicorn
 xgboost
 opencv-python
+tensorflow-addons
+
 
 for Plant price dectection
 python scripts/preprocess_data.py  

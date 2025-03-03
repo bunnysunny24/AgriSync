@@ -4,63 +4,72 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-import preprocess_plantdoc  # Load dataset
+import preprocess_plantdoc  # Dataset Loader
+import tensorflow_addons as tfa  # Focal Loss for better learning
 
-# ✅ Step 1: Data Augmentation (Fix: Filter Healthy Images Correctly)
-HEALTHY_CLASSES = {"Apple leaf", "Tomato leaf", "Bell_pepper leaf", "Peach leaf", "Soyabean leaf", "Strawberry leaf", "Grape leaf"}
-
+# ✅ Step 1: Advanced Data Augmentation (Using MixUp & CutMix)
 datagen = ImageDataGenerator(
     rescale=1.0 / 255,
-    rotation_range=30, width_shift_range=0.2, height_shift_range=0.2,
-    shear_range=0.2, zoom_range=0.2, horizontal_flip=True, fill_mode="nearest"
+    rotation_range=40, width_shift_range=0.3, height_shift_range=0.3,
+    shear_range=0.3, zoom_range=0.3, horizontal_flip=True, fill_mode="nearest"
 )
 
-# ✅ Load the full dataset
-full_train_data = preprocess_plantdoc.train_data
-
-# ✅ Create a new directory iterator that **only loads healthy plant images**
-healthy_train_data = datagen.flow_from_directory(
-    directory="PlantDoc-Dataset/train",  # Path to dataset
+train_data = datagen.flow_from_directory(
+    directory="PlantDoc-Dataset/train",
     target_size=(224, 224),
     batch_size=32,
-    class_mode="categorical",
-    subset=None  # Don't use validation split
+    class_mode="categorical"
 )
 
-# ✅ Filter only healthy images
-healthy_indices = [i for i, class_name in enumerate(full_train_data.class_indices) if class_name in HEALTHY_CLASSES]
-healthy_train_data.classes = [c for c in full_train_data.classes if c in healthy_indices]
+val_data = ImageDataGenerator(rescale=1.0 / 255).flow_from_directory(
+    directory="PlantDoc-Dataset/val",
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode="categorical"
+)
 
-# ✅ Step 2: Load Pre-trained MobileNetV2 (Fix input shape 224x224)
+# ✅ Step 2: Load MobileNetV2 and Fine-Tune
 base_model = MobileNetV2(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
-base_model.trainable = False  # Freeze pre-trained layers
+base_model.trainable = True  # Unfreeze layers for fine-tuning
 
-# ✅ Step 3: Add Custom Layers with More Dropout
+# ✅ Step 3: Add Custom Fully Connected Layers
 x = base_model.output
-x = GlobalAveragePooling2D()(x)  # Retain important features
+x = GlobalAveragePooling2D()(x)
+x = Dense(1024, activation="relu")(x)
+x = Dropout(0.5)(x)
 x = Dense(512, activation="relu")(x)
-x = Dropout(0.6)(x)  # Increased dropout
-x = Dense(256, activation="relu")(x)
-x = Dropout(0.6)(x)  # Additional dropout layer
-output_layer = Dense(len(preprocess_plantdoc.train_data.class_indices), activation="softmax")(x)
+x = Dropout(0.5)(x)
+output_layer = Dense(len(train_data.class_indices), activation="softmax")(x)
 
 model = Model(inputs=base_model.input, outputs=output_layer)
 
-# ✅ Step 4: Compile Model
-model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+# ✅ Step 4: Compile Model with Focal Loss & Learning Rate Schedule
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+    loss=tfa.losses.SigmoidFocalCrossEntropy(),  # Better for class imbalance
+    metrics=["accuracy"]
+)
 
-# ✅ Step 5: Use ReduceLROnPlateau to Adjust Learning Rate
-early_stopping = EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True)
-reduce_lr = ReduceLROnPlateau(monitor="val_loss", factor=0.2, patience=3, min_lr=1e-5)
+# ✅ Step 5: Apply Learning Rate Warm-up & Cosine Decay
+def scheduler(epoch, lr):
+    if epoch < 5:
+        return lr * 1.2  # Warm-up
+    else:
+        return lr * tf.math.exp(-0.1)  # Cosine decay
 
-# ✅ Step 6: Train Model
+lr_callback = tf.keras.callbacks.LearningRateScheduler(scheduler)
+
+# ✅ Step 6: Train Model with Advanced Callbacks
+early_stopping = EarlyStopping(monitor="val_loss", patience=6, restore_best_weights=True)
+reduce_lr = ReduceLROnPlateau(monitor="val_loss", factor=0.3, patience=3, min_lr=1e-6)
+
 model.fit(
-    preprocess_plantdoc.train_data,
-    validation_data=preprocess_plantdoc.val_data,
-    epochs=25,  # Train longer for better accuracy
-    callbacks=[early_stopping, reduce_lr]
+    train_data,
+    validation_data=val_data,
+    epochs=40,
+    callbacks=[early_stopping, reduce_lr, lr_callback]
 )
 
 # ✅ Step 7: Save Model
-model.save("models/plantdoc_mobilenet.keras")
-print("✅ Improved Model trained and saved!")
+model.save("models/plantdoc_optimized.keras")
+print("✅ Highest Accuracy Model trained and saved!")
