@@ -10,9 +10,22 @@ const Marketplace = () => {
 
     // ✅ List Crop for Sale
     const handleListCrop = async () => {
-        await listCrop(name, quantity, price);
-        alert("✅ Crop listed successfully!");
+        console.log("🔹 Listing Crop: ", name, quantity, price);
+    
+        if (!name || quantity <= 0 || price <= 0) {
+            alert("⚠️ Please enter valid details!");
+            return;
+        }
+    
+        try {
+            await listCrop(name, Number(quantity), Number(price));
+            alert("✅ Crop listed successfully!");
+        } catch (error) {
+            console.error("❌ Error listing crop:", error);
+            alert("❌ Listing Failed: " + error.message);
+        }
     };
+    
 
     // ✅ Buy Crop
     const handleBuyCrop = async () => {

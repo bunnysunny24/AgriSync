@@ -1,14 +1,9 @@
 import Web3 from "web3";
 
-let web3;
-if (window.ethereum) {
-    web3 = new Web3(window.ethereum);
-    window.ethereum.request({ method: "eth_requestAccounts" });
-} else {
-    web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545")); // Ganache Provider
-}
+const web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
 
-const contractAddress = "PASTE_DEPLOYED_CONTRACT_ADDRESS_HERE"; // Update with actual address
+// ✅ Smart Contract Address & ABI (Ensure it's deployed on Ganache)
+const contractAddress = "0xF18F2EBA8C9366E8b487984b70EB830629dDf393"; // Update if needed
 const abi = [
     {
         "inputs": [
@@ -49,10 +44,17 @@ const contract = new web3.eth.Contract(abi, contractAddress);
 export const listCrop = async (name, quantity, price) => {
     try {
         const accounts = await web3.eth.getAccounts();
-        await contract.methods.listCrop(name, quantity, price).send({ from: accounts[0] });
+        await contract.methods.listCrop(name, quantity, price).send({
+            from: accounts[0],
+            gas: 300000, // ✅ Ensure sufficient gas
+        });
         console.log("✅ Crop listed for sale!");
     } catch (error) {
-        console.error("❌ Error listing crop:", error);
+        if (error.message.includes("revert")) {
+            console.error("❌ Transaction Reverted: ", error.message);
+        } else {
+            console.error("❌ Error listing crop:", error);
+        }
     }
 };
 
