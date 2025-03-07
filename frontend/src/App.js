@@ -12,11 +12,3 @@ function App() {
 
 export default App;
 
-
-
-// import StorageForm from "./components/StorageForm";  // ✅ Check this path
- // import Marketplace from "./components/Marketplace";  // ✅ Check this path
-//<h1>🌾 Crop Storage & Marketplace</h1>
-// <StorageForm />
-//<hr />
-// <Marketplace />
