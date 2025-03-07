@@ -1,38 +1,47 @@
+/* Layering structure */
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+  position: relative;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.header-container {
+  position: relative;
+  z-index: 1000; /* Very high z-index */
+  pointer-events: auto !important; /* Force pointer events */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.content-container {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
+
+.app-loaded .content-container {
+  opacity: 1;
+}
+
+/* Animation for scroll reveal */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px); /* Reduced distance for smoother appearance */
+  transition: opacity 1s ease-out, transform 0.7s ease-out;
+  will-change: opacity, transform; /* Performance optimization */
+  position: relative; /* Ensure proper stacking */
+}
+
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Progressive reveal with minimal delays */
+.content-container .scroll-reveal:nth-child(1) { transition-delay: 0.05s; }
+.content-container .scroll-reveal:nth-child(2) { transition-delay: 0.1s; }
+.content-container .scroll-reveal:nth-child(3) { transition-delay: 0.15s; }
+.content-container .scroll-reveal:nth-child(4) { transition-delay: 0.2s; }
+
+/* Debug helper - uncomment to check for overlays */
+/* * {
+  outline: 1px solid rgba(255, 0, 0, 0.2) !important;
+} */
