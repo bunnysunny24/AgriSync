@@ -8,3 +8,5 @@ Date,City,Temperature (°C),Humidity (%),Wind Speed (m/s),Pressure (hPa),Weather
 2024-02-26,New Delhi,21,48,2.9,1012,Haze,haze
 2025-03-02,New Delhi,20.09,83,1.54,1013,Mist,mist
 2025-03-02,New Delhi,20.09,83,1.54,1013,Mist,mist
+2025-03-07,New Delhi,27.59,13,2.65,1007,Clear,clear sky
+2025-03-07,Cherrapunji,11.09,44,2.4,1010,Clear,clear sky
