@@ -3,11 +3,11 @@ import React from 'react';
 const HeroSection = () => {
   return (
     <section 
-      className="relative min-h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: "url('https://source.unsplash.com/random/1600x900/?agricultural,fields')"
-      }}
-    >
+  className="relative min-h-screen bg-cover bg-center"
+  style={{
+    backgroundImage: "url('/farm.avif')"
+  }}
+>
       {/* Dark overlay for better text visibility */}
       <div className="absolute inset-0 bg-black bg-opacity-30"></div>
       
