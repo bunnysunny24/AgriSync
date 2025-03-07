@@ -122,6 +122,9 @@ const AgriDashboard = () => {
               SMART AGRICULTURAL TOOLS
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-smart-yellow transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
             </p>
+            <br> 
+            
+            </br>
             <h1 className="text-white text-4xl md:text-5xl font-bold relative inline-block">
               Smart Farming Dashboard
               <div className="absolute -bottom-2 left-0 w-full h-1 bg-smart-yellow transform scale-x-0 origin-left transition-transform duration-700" 
