@@ -9,7 +9,7 @@ const OrganicFarmUI = () => {
           <div className="md:w-1/2">
             <div className="bg-black bg-opacity-10 rounded-lg overflow-hidden">
               <img 
-                src="/api/placeholder/500/450" 
+                src="farms.avif" 
                 alt="Farmers in corn field at sunset"
                 className="w-full h-auto"
               />

@@ -3,6 +3,8 @@ import "./App.css";
 import Header from './pages/Header';
 import HeroSection from './pages/HeroSection';
 import Agriinfo from './pages/OrganicFarmUI';
+import Dashboard from './pages/AgriDashboard';
+import News from './pages/AgriNewsSection';
 
 function App() {
   return (
@@ -10,6 +12,8 @@ function App() {
       <Header />
       <HeroSection />
       <Agriinfo />
+      <Dashboard />
+      <News />
     </div>
   );
 }
