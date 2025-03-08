@@ -1,25 +1,8 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-import numpy as np
-import cv2
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import img_to_array
 import os
-from io import BytesIO
-import preprocess_plantdoc  # Load class labels
-
-# ✅ Load trained model
-MODEL_PATH = "models/plantdoc_best.keras"
-model = tf.keras.models.load_model(MODEL_PATH)
-
-# ✅ Get class labels
-CLASS_LABELS = list(preprocess_plantdoc.train_data.class_indices.keys())
-
-# ✅ Define Healthy Classes
-HEALTHY_CLASSES = {
-    "Apple leaf", "Tomato leaf", "Bell_pepper leaf",
-    "Peach leaf", "Soyabean leaf", "Strawberry leaf", "Grape leaf"
-}
+import shutil
+from predict_plantdoc import predict_disease  # ✅ Import only this!
 
 # ✅ Initialize FastAPI
 app = FastAPI()
@@ -40,39 +23,29 @@ async def health_check():
 
 # ✅ Prediction Endpoint
 @app.post("/predict")
-async def predict_disease(file: UploadFile = File(...)):
+async def predict(file: UploadFile = File(...)):
     try:
-        # ✅ Read image file
-        contents = await file.read()
-        img_array = np.frombuffer(contents, np.uint8)
-        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        # ✅ Create temp folder (if not exists)
+        temp_dir = "temp_uploads"
+        os.makedirs(temp_dir, exist_ok=True)
 
-        if img is None:
-            return {"error": "Invalid image file"}
+        # ✅ Save uploaded image temporarily
+        file_path = os.path.join(temp_dir, file.filename)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-        # ✅ Preprocess image
-        img = cv2.resize(img, (224, 224))
-        img = img_to_array(img) / 255.0  # Normalize
-        img = np.expand_dims(img, axis=0)  # Expand dimensions for batch
+        # ✅ Call `predict_disease()` function
+        result = predict_disease(file_path)
 
-        # ✅ Make prediction
-        prediction = model.predict(img)
-        predicted_class = CLASS_LABELS[np.argmax(prediction)]
-        confidence = float(np.max(prediction))
+        # ✅ Cleanup: Remove temp file after prediction
+        os.remove(file_path)
 
-        # ✅ Determine health status
-        health_status = "HEALTHY" if predicted_class in HEALTHY_CLASSES else "DISEASED"
-
-        return {
-            "class": predicted_class,
-            "confidence": confidence,
-            "status": health_status
-        }
+        return result  # ✅ Send prediction result to frontend
 
     except Exception as e:
         return {"error": str(e)}
 
-# ✅ Run FastAPI (only needed for local testing)
+# ✅ Run FastAPI (only for local testing)
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

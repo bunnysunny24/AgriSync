@@ -2,21 +2,22 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
-import preprocess_plantdoc  # Load class labels
 import os
 
 # ✅ Load trained model
-MODEL_PATH = "models/plantdoc_best.keras"
+MODEL_PATH = r"D:\Bunny\AgriSync\backend\models\plantdoc_best.keras"
 model = tf.keras.models.load_model(MODEL_PATH)
 
-# ✅ Get class labels
-CLASS_LABELS = list(preprocess_plantdoc.train_data.class_indices.keys())
+# ✅ Manually define class labels to remove dependency on `preprocess_plantdoc.py`
+CLASS_LABELS = [
+    "Apple leaf", "Tomato leaf", "Bell_pepper leaf", "Peach leaf", "Soyabean leaf",
+    "Strawberry leaf", "Grape leaf", "Apple rust", "Tomato blight", "Powdery mildew",
+    "Early blight", "Bacterial spot", "Septoria leaf spot", "Leaf curl", "Late blight",
+    "Nutrient deficiency", "Black spot", "Anthracnose", "Fungal infection"
+]
 
 # ✅ Define Healthy Classes
-HEALTHY_CLASSES = {
-    "Apple leaf", "Tomato leaf", "Bell_pepper leaf",
-    "Peach leaf", "Soyabean leaf", "Strawberry leaf", "Grape leaf"
-}
+HEALTHY_CLASSES = {"Apple leaf", "Tomato leaf", "Bell_pepper leaf", "Peach leaf", "Soyabean leaf", "Strawberry leaf", "Grape leaf"}
 
 def predict_disease(image_path):
     try:
