@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AgriDashboard = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeCard, setActiveCard] = useState(null);
   const [isHovering, setIsHovering] = useState(false);
   const [weatherData, setWeatherData] = useState({ temp: 28, humidity: 65 });
+  const navigate = useNavigate();
   
   // Animation on component mount
   useEffect(() => {
@@ -20,6 +22,19 @@ const AgriDashboard = () => {
     
     return () => clearInterval(interval);
   }, []);
+  
+  // Handle card click - navigate to appropriate route
+  const handleCardClick = (cardId) => {
+    switch(cardId) {
+      case 2: // Plant Disease Detection
+        navigate('/disease-detection');
+        break;
+      default:
+        // For other cards, we just show an active state
+        setActiveCard(cardId);
+        break;
+    }
+  };
   
   // Dashboard card data
   const dashboardCards = [
@@ -122,9 +137,6 @@ const AgriDashboard = () => {
               SMART AGRICULTURAL TOOLS
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-smart-yellow transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
             </p>
-            <br> 
-            
-            </br>
             <h1 className="text-white text-4xl md:text-5xl font-bold relative inline-block">
               Smart Farming Dashboard
               <div className="absolute -bottom-2 left-0 w-full h-1 bg-smart-yellow transform scale-x-0 origin-left transition-transform duration-700" 
@@ -160,6 +172,7 @@ const AgriDashboard = () => {
                 setActiveCard(null);
                 setIsHovering(false);
               }}
+              onClick={() => handleCardClick(card.id)}
               style={{ 
                 transform: isLoaded ? 'translateY(0)' : 'translateY(50px)',
                 opacity: isLoaded ? 1 : 0,

@@ -5,6 +5,8 @@ import HeroSection from './pages/HeroSection';
 import Agriinfo from './pages/OrganicFarmUI';
 import Dashboard from './pages/AgriDashboard';
 import News from './pages/AgriNewsSection';
+import PlantDiseaseDetection from './pages/PlantDiseaseDetection';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   // Add state to track if components are loaded
@@ -52,29 +54,36 @@ function App() {
   }, []);
 
   return (
-    <div className={`App ${loaded ? 'app-loaded' : ''}`}>
-      {/* Header with explicit high z-index */}
-      <div className="header-container">
-        <Header />
+    <Router>
+      <div className={`App ${loaded ? 'app-loaded' : ''}`}>
+        {/* Header with explicit high z-index */}
+        <div className="header-container">
+          <Header />
+        </div>
+        
+        {/* Content container */}
+        <Routes>
+          <Route path="/disease-detection" element={<PlantDiseaseDetection />} />
+          <Route path="/" element={
+            <div className="content-container">
+              {/* Pre-load all components but keep them hidden until scrolled to */}
+              <div className="scroll-reveal">
+                <HeroSection />
+              </div>
+              <div className="scroll-reveal">
+                <Agriinfo />
+              </div>
+              <div className="scroll-reveal">
+                <Dashboard />
+              </div>
+              <div className="scroll-reveal">
+                <News />
+              </div>
+            </div>
+          } />
+        </Routes>
       </div>
-      
-      {/* Content container */}
-      <div className="content-container">
-        {/* Pre-load all components but keep them hidden until scrolled to */}
-        <div className="scroll-reveal">
-          <HeroSection />
-        </div>
-        <div className="scroll-reveal">
-          <Agriinfo />
-        </div>
-        <div className="scroll-reveal">
-          <Dashboard />
-        </div>
-        <div className="scroll-reveal">
-          <News />
-        </div>
-      </div>
-    </div>
+    </Router>
   );
 }
 
