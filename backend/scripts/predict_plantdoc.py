@@ -5,53 +5,62 @@ from tensorflow.keras.preprocessing.image import img_to_array
 import preprocess_plantdoc  # Load class labels
 import os
 
-# Load trained model
-MODEL_PATH = "models/plantdoc_optimized.keras"
+# ✅ Load trained model
+MODEL_PATH = "models/plantdoc_best.keras"
 model = tf.keras.models.load_model(MODEL_PATH)
 
-# Get class labels
+# ✅ Get class labels
 CLASS_LABELS = list(preprocess_plantdoc.train_data.class_indices.keys())
 
 # ✅ Define Healthy Classes
-HEALTHY_CLASSES = {"Apple leaf", "Tomato leaf", "Bell_pepper leaf", "Peach leaf", "Soyabean leaf", "Strawberry leaf", "Grape leaf"}
+HEALTHY_CLASSES = {
+    "Apple leaf", "Tomato leaf", "Bell_pepper leaf",
+    "Peach leaf", "Soyabean leaf", "Strawberry leaf", "Grape leaf"
+}
 
 def predict_disease(image_path):
     try:
-        # ✅ Fix path issue (use raw string or replace backslashes)
-        image_path = os.path.normpath(image_path)  # Standardizes path format
+        # ✅ Standardize path format
+        image_path = os.path.normpath(image_path)
 
         # ✅ Check if file exists
         if not os.path.exists(image_path):
-            print(f"❌ Error: Image file not found -> {image_path}")
-            return
-        
-        # Load image
+            return {"error": f"Image file not found -> {image_path}"}
+
+        # ✅ Load image
         img = cv2.imread(image_path)
 
         # ✅ Check if image was loaded correctly
         if img is None:
-            print(f"❌ Error: Could not load image -> {image_path}")
-            return
+            return {"error": f"Could not load image -> {image_path}"}
 
-        # Preprocess image
-        img = cv2.resize(img, (224, 224))  # ✅ Fix: Match model input shape
+        # ✅ Convert BGR → RGB (Fix for TensorFlow models)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # ✅ Preprocess image
+        img = cv2.resize(img, (224, 224))  # Match model input shape
         img = img_to_array(img) / 255.0    # Normalize
         img = np.expand_dims(img, axis=0)  # Expand dimensions for batch
 
-        # Make prediction
+        # ✅ Make prediction
         prediction = model.predict(img)
         predicted_class = CLASS_LABELS[np.argmax(prediction)]
-        confidence = np.max(prediction)
+        confidence = float(np.max(prediction))  # Convert NumPy float to Python float
 
         # ✅ Check if the predicted class is healthy
-        if predicted_class in HEALTHY_CLASSES:
-            print(f"✅ The plant is **HEALTHY** ({predicted_class}) - Confidence: {confidence:.2f}")
-        else:
-            print(f"⚠️ The plant is **DISEASED**: {predicted_class} - Confidence: {confidence:.2f}")
+        health_status = "HEALTHY" if predicted_class in HEALTHY_CLASSES else "DISEASED"
+
+        return {
+            "class": predicted_class,
+            "confidence": round(confidence, 4),
+            "status": health_status
+        }
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        return {"error": str(e)}
 
-# ✅ Example usage (Fix path issue)
-image_path = r"PlantDoc-Dataset\trial_image2.jpg"  # Use raw string or forward slashes
-predict_disease(image_path)
+# ✅ Example usage (for testing)
+if __name__ == "__main__":
+    image_path = r"PlantDoc-Dataset\trial_image2.jpg"
+    result = predict_disease(image_path)
+    print(result)  # Print JSON response
