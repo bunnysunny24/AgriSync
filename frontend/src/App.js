@@ -6,6 +6,7 @@ import Agriinfo from './pages/OrganicFarmUI';
 import Dashboard from './pages/AgriDashboard';
 import News from './pages/AgriNewsSection';
 import PlantDiseaseDetection from './pages/PlantDiseaseDetection';
+import MarketPrediction from './pages/MarketPrediction';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
         {/* Content container */}
         <Routes>
           <Route path="/disease-detection" element={<PlantDiseaseDetection />} />
+          <Route path="/market-predection" element={<MarketPrediction />} />
           <Route path="/" element={
             <div className="content-container">
               {/* Pre-load all components but keep them hidden until scrolled to */}

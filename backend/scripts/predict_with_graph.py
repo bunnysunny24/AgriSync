@@ -32,12 +32,17 @@ def predict_future_prices_with_graph(crop, weeks_ahead=5):
         data = data.sort_values(by="Reported Date")
 
         # Handle missing dates
-        last_date = data["Reported Date"].dropna().max()
-        last_day_num = (last_date - data["Reported Date"].min()).days
+                # Start from today
+        today = datetime.strptime("2025-03-09", "%Y-%m-%d")
+        end_date = datetime.strptime("2025-04-12", "%Y-%m-%d")
 
-        # Generate future dates
-        future_dates = [last_date + timedelta(weeks=i) for i in range(1, weeks_ahead + 1)]
-        future_days = np.array([last_day_num + (i * 7) for i in range(1, weeks_ahead + 1)])
+        # Calculate how many weeks between today and end_date
+        weeks_ahead = (end_date - today).days // 7
+
+        # Generate future dates from today
+        future_dates = [today + timedelta(weeks=i) for i in range(1, weeks_ahead + 1)]
+        future_days = np.array([(d - data["Reported Date"].min()).days for d in future_dates])
+
 
         # Use median values for numerical features but introduce small variations
         arrivals_median = data["Arrivals (Tonnes)"].median()

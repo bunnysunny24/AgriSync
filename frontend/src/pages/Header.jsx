@@ -22,13 +22,13 @@ const Header = () => {
   }, []);
   
   const menuItems = [
-    { name: 'Home', icon: '🏠' },
-    { name: 'About Us', icon: 'ℹ️' },
-    { name: 'Our Products', icon: '🌱' },
-    { name: 'Projects', icon: '📊' },
-    { name: 'Services', icon: '🔧' },
-    { name: 'News', icon: '📰' },
-    { name: 'Contact Us', icon: '✉️' }
+    { name: 'Home', icon: '🏠', path: '/' },
+    { name: 'About Us', icon: 'ℹ️', path: '#aboutus' },
+    { name: 'Our Products', icon: '🌱', path: '#ourproducts' },
+    { name: 'Projects', icon: '📊', path: '#projects' },
+    { name: 'Services', icon: '🔧', path: '#services' },
+    { name: 'News', icon: '📰', path: '#news' },
+    { name: 'Contact Us', icon: '✉️', path: '#contactus' }
   ];
   
   return (
@@ -73,7 +73,7 @@ const Header = () => {
                 onMouseLeave={() => setActiveItem(null)}
               >
                 <a 
-                  href={`#${item.name.toLowerCase().replace(/\s+/g, '')}`} 
+                  href={item.path} 
                   className="text-white no-underline text-sm py-2 block hover:text-green-200 transition-all duration-300"
                 >
                   <span className={`transition-all duration-300 ${
@@ -112,7 +112,7 @@ const Header = () => {
               style={{ transitionDelay: menuOpen ? `${index * 50}ms` : '0ms' }}
             >
               <a 
-                href={`#${item.name.toLowerCase().replace(/\s+/g, '')}`} 
+                href={item.path} 
                 className="block py-3 text-white no-underline text-sm hover:text-green-200 transition-all duration-300 flex items-center"
               >
                 <span className="mr-3 text-green-300">{item.icon}</span>
