@@ -3,7 +3,7 @@ import Web3 from "web3";
 const web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
 
 // ✅ Smart Contract Address & ABI (Ensure it's deployed on Ganache)
-const contractAddress = "0x01356feE382f02C2F7932fFD5b9f6b20518c920D"; // Update if needed
+const contractAddress = "0x1406E4b10DEb8feA28BF50bd4F66DdABF7d9A5F5"; // Update if needed
 const abi = [
     {
         "inputs": [
