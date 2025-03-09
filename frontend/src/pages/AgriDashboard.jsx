@@ -32,7 +32,10 @@ const AgriDashboard = () => {
       case 2: // Plant Disease Detection
         navigate('/disease-detection');
         break;
-      default:
+      case 3: // Plant Disease Detection
+        navigate('/weather-predection');
+        break;
+        default:
         // For other cards, we just show an active state
         setActiveCard(cardId);
         break;

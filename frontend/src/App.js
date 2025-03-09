@@ -7,6 +7,7 @@ import Dashboard from './pages/AgriDashboard';
 import News from './pages/AgriNewsSection';
 import PlantDiseaseDetection from './pages/PlantDiseaseDetection';
 import MarketPrediction from './pages/MarketPrediction';
+import WeatherForecast from './pages/WeatherForecast';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
         <Routes>
           <Route path="/disease-detection" element={<PlantDiseaseDetection />} />
           <Route path="/market-predection" element={<MarketPrediction />} />
+          <Route path="/weather-predection" element={<WeatherForecast />} />
           <Route path="/" element={
             <div className="content-container">
               {/* Pre-load all components but keep them hidden until scrolled to */}
