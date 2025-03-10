@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -86,10 +87,12 @@ const Header = () => {
           </ul>
           
           <div className="flex items-center">
-            <button className="bg-green-600 hover:bg-green-500 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400">
-              Login
-            </button>
-          </div>
+  <Link to="/RegisterPage">
+    <button className="bg-green-600 hover:bg-green-500 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400">
+      Login
+    </button>
+  </Link>
+</div>
         </nav>
       </div>
     
