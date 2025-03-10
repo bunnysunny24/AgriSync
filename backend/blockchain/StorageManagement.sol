@@ -18,7 +18,6 @@ contract StorageManagement {
     event SlotUpdated(uint id, uint available);
     event SlotDeactivated(uint id);
 
-    // ✅ Register a new storage slot
     function registerStorage(uint capacity) public {
         require(capacity > 0, "Capacity must be greater than zero");
         
@@ -29,7 +28,6 @@ contract StorageManagement {
         nextSlotId++;
     }
 
-    // ✅ Update storage availability (e.g., after usage)
     function updateAvailability(uint slotId, uint newAvailable) public {
         require(storageSlots[slotId].owner == msg.sender, "Unauthorized");
         require(storageSlots[slotId].isActive, "Slot is inactive");
@@ -39,7 +37,6 @@ contract StorageManagement {
         emit SlotUpdated(slotId, newAvailable);
     }
 
-    // ✅ Deactivate storage slot (e.g., if damaged)
     function deactivateSlot(uint slotId) public {
         require(storageSlots[slotId].owner == msg.sender, "Unauthorized");
         require(storageSlots[slotId].isActive, "Slot already inactive");
@@ -48,7 +45,6 @@ contract StorageManagement {
         emit SlotDeactivated(slotId);
     }
 
-    // ✅ Get farmer's slots
     function getFarmerSlots(address farmer) public view returns (uint[] memory) {
         return farmerSlots[farmer];
     }

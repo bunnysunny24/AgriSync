@@ -13,26 +13,25 @@ except Exception as e:
 
 app = FastAPI()
 
-# ✅ Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all for now
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ✅ Define and mount static graph folder
+
 GRAPH_DIR = r"D:\Bunny\AgriSync\backend\scripts\predicted_graphs"
 os.makedirs(GRAPH_DIR, exist_ok=True)
 app.mount("/graphs", StaticFiles(directory=GRAPH_DIR), name="graphs")
 
-# ✅ Health Check
+
 @app.get("/health")
 def health_check():
     return {"status": "API is running"}
 
-# ✅ Disease Prediction (image upload)
+
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
@@ -49,7 +48,7 @@ async def predict(file: UploadFile = File(...)):
     except Exception as e:
         return {"error": str(e)}
 
-# ✅ Market Predictions
+
 print("🟢 Registering /market-predictions route")
 @app.get("/market-predictions")
 def get_predictions_for_graph():

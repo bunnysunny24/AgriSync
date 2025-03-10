@@ -47,16 +47,126 @@ const PlantDiseaseDetection = () => {
   // Open camera for capture
   const openCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "environment" } 
-      });
+      // Try different possible DroidCam URL formats
+      const ipAddress = "10.9.143.196";
+      const port = "4747";
       
-      videoRef.current.srcObject = stream;
-      streamRef.current = stream;
-      setIsCameraOpen(true);
+      // Option 1: Standard video endpoint
+      const droidcamUrl = `http://${ipAddress}:${port}/video`;
+      
+      // Check if video element exists
+      if (!videoRef.current) {
+        console.error("Video element is not available");
+        alert("Camera initialization failed. Please try again.");
+        return;
+      }
+      
+      // Create a new Image to test connectivity before setting up video
+      const testConnection = new Image();
+      testConnection.onload = () => {
+        console.log("DroidCam connection successful");
+        
+        // Connection successful, set up video
+        if (videoRef.current) {
+          videoRef.current.src = droidcamUrl;
+          videoRef.current.onloadedmetadata = () => {
+            videoRef.current.play()
+              .then(() => {
+                setIsCameraOpen(true);
+              })
+              .catch(error => {
+                console.error("Error playing DroidCam feed:", error);
+                tryAlternativeUrl();
+              });
+          };
+          
+          videoRef.current.onerror = () => {
+            console.error("Error loading DroidCam video feed");
+            tryAlternativeUrl();
+          };
+        }
+      };
+      
+      testConnection.onerror = () => {
+        console.error("Could not connect to primary DroidCam URL");
+        tryAlternativeUrl();
+      };
+      
+      // Test connection with a simple image request
+      testConnection.src = `http://${ipAddress}:${port}/mjpegfeed?640x480`;
+      
+      // Function to try alternative URLs if the primary one fails
+      const tryAlternativeUrl = () => {
+        console.log("Trying alternative DroidCam URL format...");
+        
+        // Check if video element exists before proceeding
+        if (!videoRef.current) {
+          console.error("Video element is not available during fallback");
+          alert("Camera initialization failed. Please try again.");
+          setIsCameraOpen(false);
+          return;
+        }
+        
+        // Option 2: Try MJPEG feed
+        const mjpegUrl = `http://${ipAddress}:${port}/mjpegfeed`;
+        videoRef.current.src = mjpegUrl;
+        
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play()
+            .then(() => {
+              setIsCameraOpen(true);
+            })
+            .catch(error => {
+              console.error("Error playing alternative DroidCam feed:", error);
+              tryThirdOption();
+            });
+        };
+        
+        videoRef.current.onerror = () => {
+          console.error("Error loading alternative DroidCam feed");
+          tryThirdOption();
+        };
+      };
+      
+      // Try a third option if needed
+      const tryThirdOption = () => {
+        console.log("Trying third DroidCam URL format...");
+        
+        // Check if video element exists before proceeding
+        if (!videoRef.current) {
+          console.error("Video element is not available during second fallback");
+          alert("Camera initialization failed. Please try again.");
+          setIsCameraOpen(false);
+          return;
+        }
+        
+        // Option 3: WebRTC endpoint (if supported by your DroidCam version)
+        const webrtcUrl = `http://${ipAddress}:${port}/videofeed`;
+        videoRef.current.src = webrtcUrl;
+        
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play()
+            .then(() => {
+              setIsCameraOpen(true);
+            })
+            .catch(finalError => {
+              console.error("All DroidCam connection attempts failed:", finalError);
+              alert("Could not connect to DroidCam after multiple attempts. Please verify:\n1. DroidCam is running on your phone\n2. Your phone and computer are on the same network\n3. The IP address and port are correct (10.9.143.196:4747)\n4. No firewall is blocking the connection");
+              closeCamera();
+            });
+        };
+        
+        videoRef.current.onerror = () => {
+          console.error("All DroidCam connection attempts failed");
+          alert("Could not connect to DroidCam after multiple attempts. Please verify your DroidCam settings and network connection.");
+          closeCamera();
+        };
+      };
+      
     } catch (error) {
-      console.error("Error accessing camera:", error);
-      alert("Could not access camera. Please check permissions.");
+      console.error("Error accessing DroidCam:", error);
+      alert("Could not access DroidCam. Please check your connection and DroidCam settings.");
+      closeCamera();
     }
   };
 
@@ -64,6 +174,12 @@ const PlantDiseaseDetection = () => {
   const captureImage = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
+    
+    if (!video || !canvas) {
+      console.error("Video or canvas element is not available");
+      return;
+    }
+    
     const context = canvas.getContext('2d');
     
     // Set canvas dimensions to match video
@@ -86,9 +202,10 @@ const PlantDiseaseDetection = () => {
 
   // Close camera
   const closeCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.src = "";
+      videoRef.current.load();
     }
     setIsCameraOpen(false);
   };

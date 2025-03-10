@@ -1,10 +1,8 @@
 import pandas as pd
 
-# ✅ Load Weather Data
 weather_df = pd.read_csv("data\historical_weather.csv")
 weather = weather_df.iloc[0]
 
-# ✅ Alert System Logic
 def check_weather_alerts():
     alerts = []
     
@@ -26,6 +24,5 @@ def check_weather_alerts():
         for alert in alerts:
             print(alert)
 
-# ✅ Run the function
 if __name__ == "__main__":
     check_weather_alerts()

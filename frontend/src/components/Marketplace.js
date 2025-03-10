@@ -87,20 +87,12 @@ const Marketplace = () => {
     }
   };
 
-  // Animation functions
+  // Animation functions - only used for button press and section changes
   const animateIn = (element) => {
     animate(
       element,
       { y: [20, 0], opacity: [0, 1] },
       { duration: 0.5, ease: "easeOut" }
-    );
-  };
-
-  const animateHover = (element) => {
-    animate(
-      element,
-      { y: -2 },
-      { duration: 0.2, ease: "easeOut" }
     );
   };
 
@@ -132,15 +124,11 @@ const Marketplace = () => {
         <div 
           id="marketplace-container"
           className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden"
-          ref={(el) => el && animate(el, { y: [50, 0], opacity: [0, 1] }, { duration: 0.8 })}
         >
           <div className="bg-smart-green p-6 text-white">
             <h1 className="text-3xl font-bold flex items-center">
               <span className="text-smart-yellow">🌾</span>
-              <span 
-                className="ml-3"
-                ref={(el) => el && animate(el, { x: [-20, 0], opacity: [0, 1] }, { duration: 0.8, delay: 0.5 })}
-              >
+              <span className="ml-3">
                 FarmChain Marketplace
               </span>
             </h1>
@@ -156,8 +144,6 @@ const Marketplace = () => {
                   ? "text-smart-green border-b-2 border-smart-yellow"
                   : "text-gray-500 hover:text-smart-green"
               }`}
-              onMouseEnter={(e) => animateHover(e.currentTarget)}
-              onMouseLeave={(e) => animate(e.currentTarget, { y: 0 }, { duration: 0.2 })}
             >
               <div className="flex justify-center items-center">
                 <span className="mr-2 text-xl">🌱</span> List Crops
@@ -170,8 +156,6 @@ const Marketplace = () => {
                   ? "text-smart-green border-b-2 border-smart-yellow"
                   : "text-gray-500 hover:text-smart-green"
               }`}
-              onMouseEnter={(e) => animateHover(e.currentTarget)}
-              onMouseLeave={(e) => animate(e.currentTarget, { y: 0 }, { duration: 0.2 })}
             >
               <div className="flex justify-center items-center">
                 <span className="mr-2 text-xl">🛒</span> Buy Crops
@@ -191,49 +175,34 @@ const Marketplace = () => {
                 </h2>
                 
                 <div className="space-y-4">
-                  <div className="relative">
-                    <div className="group">
-                      <input
-                        type="text"
-                        placeholder="Crop Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-smart-green transition-all"
-                        onMouseEnter={(e) => animateHover(e.currentTarget)}
-                        onMouseLeave={(e) => animate(e.currentTarget, { y: 0 }, { duration: 0.2 })}
-                      />
-                      <div className="h-0.5 bg-smart-yellow w-0 group-hover:w-full transition-all duration-300 absolute bottom-0 left-0" />
-                    </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Crop Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-smart-green"
+                    />
                   </div>
                   
-                  <div className="relative">
-                    <div className="group">
-                      <input
-                        type="number"
-                        placeholder="Quantity"
-                        value={quantity}
-                        onChange={(e) => setQuantity(e.target.value)}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-smart-green transition-all"
-                        onMouseEnter={(e) => animateHover(e.currentTarget)}
-                        onMouseLeave={(e) => animate(e.currentTarget, { y: 0 }, { duration: 0.2 })}
-                      />
-                      <div className="h-0.5 bg-smart-yellow w-0 group-hover:w-full transition-all duration-300 absolute bottom-0 left-0" />
-                    </div>
+                  <div>
+                    <input
+                      type="number"
+                      placeholder="Quantity"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-smart-green"
+                    />
                   </div>
                   
-                  <div className="relative">
-                    <div className="group">
-                      <input
-                        type="number"
-                        placeholder="Price (wei)"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-smart-green transition-all"
-                        onMouseEnter={(e) => animateHover(e.currentTarget)}
-                        onMouseLeave={(e) => animate(e.currentTarget, { y: 0 }, { duration: 0.2 })}
-                      />
-                      <div className="h-0.5 bg-smart-yellow w-0 group-hover:w-full transition-all duration-300 absolute bottom-0 left-0" />
-                    </div>
+                  <div>
+                    <input
+                      type="number"
+                      placeholder="Price (wei)"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-smart-green"
+                    />
                   </div>
                   
                   <button
@@ -243,8 +212,6 @@ const Marketplace = () => {
                     }}
                     disabled={loading}
                     className="w-full bg-smart-green hover:bg-opacity-90 text-white font-medium py-3 px-6 rounded-lg shadow-md transform transition-all flex justify-center items-center"
-                    onMouseEnter={(e) => animate(e.currentTarget, { scale: 1.03 }, { duration: 0.2 })}
-                    onMouseLeave={(e) => animate(e.currentTarget, { scale: 1 }, { duration: 0.2 })}
                   >
                     {loading ? (
                       <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -294,19 +261,14 @@ const Marketplace = () => {
                 
                 <div className="space-y-4">
                   <div className="flex space-x-3">
-                    <div className="flex-grow relative">
-                      <div className="group">
-                        <input
-                          type="number"
-                          placeholder="Enter Crop ID"
-                          value={cropId}
-                          onChange={(e) => setCropId(e.target.value)}
-                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-smart-green transition-all"
-                          onMouseEnter={(e) => animateHover(e.currentTarget)}
-                          onMouseLeave={(e) => animate(e.currentTarget, { y: 0 }, { duration: 0.2 })}
-                        />
-                        <div className="h-0.5 bg-smart-yellow w-0 group-hover:w-full transition-all duration-300 absolute bottom-0 left-0" />
-                      </div>
+                    <div className="flex-grow">
+                      <input
+                        type="number"
+                        placeholder="Enter Crop ID"
+                        value={cropId}
+                        onChange={(e) => setCropId(e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-smart-green"
+                      />
                     </div>
                     
                     <button
@@ -316,8 +278,6 @@ const Marketplace = () => {
                       }}
                       disabled={loading}
                       className="bg-smart-yellow hover:bg-opacity-90 text-smart-green font-medium py-3 px-6 rounded-lg shadow-md transform transition-all"
-                      onMouseEnter={(e) => animate(e.currentTarget, { scale: 1.05 }, { duration: 0.2 })}
-                      onMouseLeave={(e) => animate(e.currentTarget, { scale: 1 }, { duration: 0.2 })}
                     >
                       {loading ? (
                         <svg className="animate-spin h-5 w-5 text-smart-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -365,8 +325,6 @@ const Marketplace = () => {
                           }}
                           disabled={loading}
                           className="w-full mt-4 bg-smart-green hover:bg-opacity-90 text-white font-medium py-3 px-6 rounded-lg shadow-md transform transition-all flex justify-center items-center"
-                          onMouseEnter={(e) => animate(e.currentTarget, { scale: 1.03 }, { duration: 0.2 })}
-                          onMouseLeave={(e) => animate(e.currentTarget, { scale: 1 }, { duration: 0.2 })}
                         >
                           {loading ? (
                             <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -409,10 +367,7 @@ const Marketplace = () => {
           </div>
 
           {/* Footer */}
-          <div 
-            className="bg-gray-50 p-4 text-center text-gray-500 text-sm border-t"
-            ref={(el) => el && animate(el, { opacity: [0, 1] }, { duration: 0.8, delay: 1 })}
-          >
+          <div className="bg-gray-50 p-4 text-center text-gray-500 text-sm border-t">
             <div className="flex justify-center items-center space-x-2">
               <span>🌾</span>
               <span>Powered by FarmChain Technology</span>

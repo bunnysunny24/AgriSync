@@ -27,7 +27,6 @@ def get_weather():
             df = pd.DataFrame([weather_info])
             os.makedirs("weather_data", exist_ok=True)
 
-            # ✅ Append new data to `historical_weather.csv`
             file_path = "data/historical_weather.csv"
             if os.path.exists(file_path):
                 df.to_csv(file_path, mode="a", header=False, index=False)
@@ -42,6 +41,5 @@ def get_weather():
     except Exception as e:
         print(f"❌ Error: {e}")
 
-# ✅ Run the function
 if __name__ == "__main__":
     get_weather()

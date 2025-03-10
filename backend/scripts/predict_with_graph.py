@@ -5,13 +5,11 @@ import pandas as pd
 import numpy as np
 import os
 
-# Paths
 MODEL_DIR = r"D:\Bunny\AgriSync\backend\models"
 DATA_DIR = r"D:\Bunny\AgriSync\backend\processed_data"
 GRAPH_DIR = r"D:\Bunny\AgriSync\backend\scripts\predicted_graphs"
 os.makedirs(GRAPH_DIR, exist_ok=True)
 
-# Model files
 models = {
     "banana": os.path.join(MODEL_DIR, "banana_model.pkl"),
     "onion": os.path.join(MODEL_DIR, "onion_model.pkl"),
@@ -82,7 +80,7 @@ def get_price_predictions():
                 for i in range(weeks_ahead)
             ]
 
-            # ✅ Save plot
+
             plt.figure(figsize=(10, 5))
             plt.plot(future_dates, predicted_prices, linestyle="dotted", color="red", marker="x", label="Predicted Prices")
             plt.xlabel("Date")
@@ -105,7 +103,7 @@ def get_price_predictions():
                 "crop": crop,
                 "unit": unit,
                 "predictions": prediction_list,
-                "graph_url": f"http://localhost:8000/graphs/{filename}"  # ✅ For frontend
+                "graph_url": f"http://localhost:8000/graphs/{filename}"  
             })
 
         except Exception as e:
