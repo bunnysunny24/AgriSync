@@ -8,11 +8,8 @@ const AgriDashboard = () => {
   const [weatherData, setWeatherData] = useState({ temp: 28, humidity: 65 });
   const navigate = useNavigate();
   
-  // Animation on component mount
   useEffect(() => {
     setIsLoaded(true);
-    
-    // Simulate weather data changing
     const interval = setInterval(() => {
       setWeatherData({
         temp: Math.floor(25 + Math.random() * 5),
@@ -23,34 +20,31 @@ const AgriDashboard = () => {
     return () => clearInterval(interval);
   }, []);
   
-  // Handle card click - navigate to appropriate route
   const handleCardClick = (cardId) => {
     switch(cardId) {
-        case 1: // Plant Disease Detection
+        case 1: 
         navigate('/market-predection');
         break;
-      case 2: // Plant Disease Detection
+      case 2: 
         navigate('/disease-detection');
         break;
-      case 3: // Plant Disease Detection
+      case 3: 
         navigate('/weather-predection');
         break;
-      case 5: // Plant Disease Detection
+      case 5: 
         navigate('/StorageForm');
         break;
-      case 6: // Plant Disease Detection
+      case 6: 
         navigate('/Marketplace');
         break;
         default:
             // Marketplace
             //StorageForm
-        // For other cards, we just show an active state
         setActiveCard(cardId);
         break;
     }
   };
   
-  // Dashboard card data
   const dashboardCards = [
     {
       id: 1,
@@ -123,7 +117,6 @@ const AgriDashboard = () => {
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-b from-smart-green to-green-900 p-6 overflow-hidden">
-      {/* Background particles */}
       <div className="fixed inset-0 z-0 opacity-10">
         {[...Array(20)].map((_, i) => (
           <div 
@@ -141,7 +134,6 @@ const AgriDashboard = () => {
         ))}
       </div>
       
-      {/* Main content */}
       <div className="max-w-6xl mx-auto relative z-10">
         <header className="text-center mb-12 pt-6">
           <div 
@@ -160,7 +152,6 @@ const AgriDashboard = () => {
             </h1>
           </div>
           
-          {/* Weather widget */}
           <div 
             className={`mt-6 inline-flex items-center bg-black bg-opacity-25 rounded-full px-4 py-2 text-white transition-all duration-700 ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
             style={{ transitionDelay: '400ms' }}
@@ -194,7 +185,6 @@ const AgriDashboard = () => {
                 transitionDelay: `${index * 100}ms`
               }}
             >
-              {/* Background light effect */}
               <div 
                 className="absolute inset-0 bg-smart-yellow opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-full scale-0 group-hover:scale-150"
                 style={{
@@ -203,7 +193,6 @@ const AgriDashboard = () => {
                 }}
               ></div>
               
-              {/* Notification badge */}
               {card.notification > 0 && (
                 <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                   {card.notification}
@@ -238,7 +227,6 @@ const AgriDashboard = () => {
           ))}
         </div>
         
-        {/* Quick stats bar */}
         <div 
           className="mt-12 bg-black bg-opacity-30 backdrop-blur-sm rounded-xl p-4 grid grid-cols-1 md:grid-cols-4 gap-4 text-white"
           style={{ 
@@ -299,7 +287,6 @@ const AgriDashboard = () => {
         </div>
       </div>
       
-      {/* Floating action button */}
       <div 
         className={`fixed bottom-6 right-6 z-20 transition-all duration-700 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         style={{ transitionDelay: '1000ms' }}
@@ -311,7 +298,6 @@ const AgriDashboard = () => {
         </button>
       </div>
 
-      {/* Add CSS animation keyframes */}
       <style jsx>{`
         @keyframes float {
           0% { transform: translateY(0) rotate(0deg); }

@@ -116,13 +116,11 @@ const WeatherForecast = () => {
   const [animationFrame, setAnimationFrame] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  // Format date for display
   const formatDate = (dateString) => {
     const options = { weekday: 'long', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
-  // Animation effects
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -132,10 +130,8 @@ const WeatherForecast = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Today's data (for featured display)
-  const today = weatherData[1]; // Using March 9th as "today"
+  const today = weatherData[1]; 
 
-  // Get weather icon based on condition
   const getWeatherIcon = (condition, size = 24, animate = false) => {
     const props = { 
       size: size, 
@@ -186,7 +182,6 @@ const WeatherForecast = () => {
 
   return (
     <div className="min-h-screen font-sans bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden -z-10">
         <div className={`absolute top-10 left-10 opacity-5 transition-all duration-3000 ease-in-out ${animateCloud ? 'translate-x-10' : 'translate-x-0'}`}>
           <Cloud size={200} color="#334b35" />
@@ -203,7 +198,6 @@ const WeatherForecast = () => {
       </div>
 
       <div className="max-w-4xl mx-auto py-8 px-4">
-        {/* Header with animated gradient border */}
         <div className="bg-white rounded-lg p-4 text-smart-green flex justify-between items-center shadow-lg border-2 border-smart-green relative overflow-hidden mb-6">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-smart-yellow/20 to-transparent -translate-x-full animate-shimmer"></div>
           <h1 className="text-3xl font-bold flex items-center">
@@ -216,12 +210,11 @@ const WeatherForecast = () => {
           </div>
         </div>
 
-        {/* Featured Day (Today) */}
+      
         <div className="bg-white shadow-lg p-6 mb-6 rounded-lg relative overflow-hidden transform transition-all duration-300 hover:scale-101 hover:shadow-xl">
-          {/* Animated gradient effect */}
+          
           <div className="absolute inset-0 bg-gradient-to-br from-smart-yellow/5 to-smart-green/5 opacity-50"></div>
           
-          {/* Floating cloud background animations */}
           <div className={`absolute top-2 right-2 opacity-10 transition-all duration-2000 ${animateCloud ? 'translate-x-4' : 'translate-x-0'}`}>
             <Cloud size={100} color="#334b35" />
           </div>
@@ -299,7 +292,6 @@ const WeatherForecast = () => {
           </div>
         </div>
 
-        {/* 7-Day Forecast */}
         <div className="bg-white shadow-lg rounded-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
           <div className="bg-smart-green p-4 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-smart-yellow/10 to-transparent -translate-x-full animate-shimmer"></div>
@@ -358,7 +350,6 @@ const WeatherForecast = () => {
             </div>
           </div>
           
-          {/* Expanded day details with animated entrance */}
           {selectedDay !== null && (
             <div className="border-t border-gray-200 animate-fadeIn">
               <div className="bg-gradient-to-br from-white to-gray-50 p-5 relative overflow-hidden">
@@ -442,7 +433,6 @@ const WeatherForecast = () => {
           )}
         </div>
         
-        {/* Weather Insights Panel */}
         <div className="mt-6 bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="bg-smart-green p-4 text-white">
             <h2 className="font-bold text-smart-yellow">Weather Insights</h2>
@@ -497,7 +487,6 @@ const WeatherForecast = () => {
           </div>
         </div>
         
-        {/* Footer with animation */}
         <div className="mt-6 text-center text-gray-500 text-sm">
           <div className={`inline-block transform transition-all duration-1000 ${animateCloud ? 'rotate-1 scale-102' : 'rotate-0 scale-100'}`}>
             <p>Data updated: March 9, 2025 | All times local</p>
@@ -506,7 +495,6 @@ const WeatherForecast = () => {
         </div>
       </div>
       
-      {/* Custom animation keyframes */}
       <style jsx>{`
         @keyframes shimmer {
           0% { transform: translateX(-100%); }

@@ -1,9 +1,7 @@
 import Web3 from "web3";
 
-// ✅ Connect to Ganache (Local Ethereum Blockchain)
 const web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
 
-// ✅ Smart Contract Address & ABI (Ensure it's deployed on Ganache)
 const contractAddress = "0x00c56AE214FaE7C06560b0Eda2bfBb33784fdA48"; // Update if needed
 const abi = [
 	{
@@ -204,16 +202,13 @@ const abi = [
 	}
 ]; 
 
-// ✅ Initialize Contract
 const contract = new web3.eth.Contract(abi, contractAddress);
 
-// ✅ Function to Get Accounts (Use First Ganache Account)
 const getAccount = async () => {
     const accounts = await web3.eth.getAccounts();
-    return accounts[0]; // Use the first account in Ganache
+    return accounts[0]; 
 };
 
-// ✅ Register Storage Slot
 export const registerStorage = async (capacity) => {
     try {
         const account = await getAccount();
@@ -230,7 +225,6 @@ export const registerStorage = async (capacity) => {
     }
 };
 
-// ✅ Update Storage Availability
 export const updateAvailability = async (slotId, available) => {
     try {
         const account = await getAccount();
@@ -247,7 +241,6 @@ export const updateAvailability = async (slotId, available) => {
     }
 };
 
-// ✅ Get Farmer's Storage Slots
 export const getFarmerSlots = async () => {
     try {
         const account = await getAccount();

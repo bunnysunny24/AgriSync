@@ -5,12 +5,10 @@ const HeroSection = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   
   useEffect(() => {
-    // Set loaded state after a small delay for entrance animations
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 100);
     
-    // Add scroll listener for parallax effect
     const handleScroll = () => {
       setScrollPosition(window.scrollY);
     };
@@ -31,7 +29,6 @@ const HeroSection = () => {
         backgroundPosition: `center ${scrollPosition * 0.5}px`
       }}
     >
-      {/* Animated particles for atmosphere */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(20)].map((_, i) => (
           <div 
@@ -49,10 +46,8 @@ const HeroSection = () => {
         ))}
       </div>
       
-      {/* Gradient overlay for better text visibility and depth */}
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent"></div>
       
-      {/* Content container with animation */}
       <div className="relative z-10 container mx-auto h-screen flex items-center">
         <div className={`max-w-2xl text-white p-6 md:p-10 transform transition-all duration-1000 ${isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
           <p className={`text-base md:text-lg mb-2 font-medium tracking-wider transition-all duration-700 delay-100 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
@@ -94,7 +89,6 @@ const HeroSection = () => {
             </button>
           </div>
           
-          {/* Animated scroll indicator */}
           <div className={`absolute bottom-10 left-10 transition-all duration-1000 delay-1000 ${isLoaded ? 'opacity-70' : 'opacity-0'}`}>
             <div className="flex flex-col items-center">
               <span className="text-xs uppercase tracking-widest mb-2">Scroll Down</span>
@@ -105,7 +99,6 @@ const HeroSection = () => {
           </div>
         </div>
         
-        {/* Floating badge */}
         <div className={`absolute top-40 right-10 md:right-40 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4 transform transition-all duration-1000 delay-700 ${isLoaded ? 'translate-y-0 opacity-100 rotate-0' : 'translate-y-10 opacity-0 rotate-12'}`}>
           <div className="relative">
             <div className="text-[#f7c35f] font-bold text-4xl md:text-5xl">100%</div>
@@ -120,7 +113,6 @@ const HeroSection = () => {
   );
 };
 
-// Add keyframes animation for floating particles
 const styles = `
 @keyframes float {
   0%, 100% {
@@ -156,7 +148,6 @@ const styles = `
 }
 `;
 
-// Add style tag to inject custom animations
 const StyleTag = () => (
   <style dangerouslySetInnerHTML={{ __html: styles }} />
 );

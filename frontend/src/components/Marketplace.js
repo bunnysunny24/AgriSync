@@ -13,11 +13,10 @@ const Marketplace = () => {
   const [cropId, setCropId] = useState("");
   const [cropDetails, setCropDetails] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [section, setSection] = useState("list"); // "list" or "buy"
+  const [section, setSection] = useState("list"); 
   const [showListSuccess, setShowListSuccess] = useState(false);
   const [showBuySuccess, setShowBuySuccess] = useState(false);
 
-  // ✅ List Crop for Sale
   const handleListCrop = async () => {
     console.log("🔹 Listing Crop: ", name, quantity, price);
 
@@ -35,7 +34,6 @@ const Marketplace = () => {
       setQuantity("");
       setPrice("");
       
-      // Show success message with animation
       setShowListSuccess(true);
       setTimeout(() => {
         setShowListSuccess(false);
@@ -47,7 +45,6 @@ const Marketplace = () => {
     }
   };
 
-  // ✅ Buy Crop
   const handleBuyCrop = async () => {
     setLoading(true);
     try {
@@ -56,7 +53,6 @@ const Marketplace = () => {
       setCropDetails(null);
       setCropId("");
       
-      // Show success message with animation
       setShowBuySuccess(true);
       setTimeout(() => {
         setShowBuySuccess(false);
@@ -68,7 +64,6 @@ const Marketplace = () => {
     }
   };
 
-  // ✅ Fetch Crop Details
   const handleFetchCrop = async () => {
     if (!cropId) {
       alert("⚠️ Please enter a crop ID!");
@@ -87,7 +82,6 @@ const Marketplace = () => {
     }
   };
 
-  // Animation functions - only used for button press and section changes
   const animateIn = (element) => {
     animate(
       element,
@@ -111,7 +105,6 @@ const Marketplace = () => {
   };
 
   useEffect(() => {
-    // Animate sections when they change
     const currentSection = document.getElementById(section + "-section");
     if (currentSection) {
       animateIn(currentSection);
@@ -135,7 +128,7 @@ const Marketplace = () => {
             <p className="text-smart-yellow mt-2 opacity-90">Buy and sell crops on the blockchain</p>
           </div>
 
-          {/* Tabs */}
+          {/* the Tabs */}
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setSection("list")}
@@ -164,7 +157,7 @@ const Marketplace = () => {
           </div>
 
           <div className="p-6">
-            {/* List Crop Section */}
+            {/* edhi List Crop Section */}
             {section === "list" && (
               <div 
                 id="list-section"
@@ -249,7 +242,7 @@ const Marketplace = () => {
               </div>
             )}
 
-            {/* Buy Crop Section */}
+            {/* edhi Buy Crop Section */}
             {section === "buy" && (
               <div 
                 id="buy-section"

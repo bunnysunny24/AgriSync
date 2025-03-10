@@ -12,7 +12,6 @@ const StorageForm = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [activeTab, setActiveTab] = useState("register");
 
-    // ✅ Fetch Farmer Slots on Load & After Update
     const fetchSlots = async () => {
         try {
             setLoading(true);
@@ -35,13 +34,11 @@ const StorageForm = () => {
         fetchSlots();
     }, []);
 
-    // Success message handler
     const showSuccessMessage = (message) => {
         setSuccessMessage(message);
         setTimeout(() => setSuccessMessage(""), 3000);
     };
 
-    // ✅ Register Storage Slot
     const handleRegister = async () => {
         if (!capacity || capacity <= 0) {
             setError("⚠️ Please enter a valid capacity!");
@@ -52,8 +49,8 @@ const StorageForm = () => {
             setError("");
             await registerStorage(Number(capacity));
             showSuccessMessage("✅ Storage Registered!");
-            setCapacity(""); // Reset input
-            fetchSlots(); // Refresh slot list
+            setCapacity(""); 
+            fetchSlots(); 
         } catch (error) {
             setError("❌ Registration Failed. Check console for details.");
             console.error("❌ Register Error:", error);
@@ -62,7 +59,6 @@ const StorageForm = () => {
         }
     };
 
-    // ✅ Update Storage Availability
     const handleUpdate = async () => {
         if (!slotId || slotId < 0 || !available || available < 0) {
             setError("⚠️ Please enter a valid Slot ID and availability!");
@@ -75,7 +71,7 @@ const StorageForm = () => {
             showSuccessMessage("✅ Storage Availability Updated!");
             setSlotId("");
             setAvailable("");
-            fetchSlots(); // Refresh slot list
+            fetchSlots(); 
         } catch (error) {
             setError("❌ Update Failed. Check console for details.");
             console.error("❌ Update Error:", error);
@@ -117,7 +113,6 @@ const StorageForm = () => {
                         </button>
                     </div>
 
-                    {/* Success Message */}
                     <AnimatePresence>
                         {successMessage && (
                             <div 
@@ -131,7 +126,6 @@ const StorageForm = () => {
                         )}
                     </AnimatePresence>
 
-                    {/* Error Message */}
                     <AnimatePresence>
                         {error && (
                             <div 
@@ -146,7 +140,6 @@ const StorageForm = () => {
                     </AnimatePresence>
 
                     <div className="p-6">
-                        {/* Register Tab */}
                         {activeTab === "register" && (
                             <div className="space-y-4">
                                 <h2 className="text-xl font-semibold text-smart-green">Register New Storage Slot</h2>
@@ -175,7 +168,6 @@ const StorageForm = () => {
                             </div>
                         )}
 
-                        {/* Update Tab */}
                         {activeTab === "update" && (
                             <div className="space-y-4">
                                 <h2 className="text-xl font-semibold text-smart-green">Update Storage Availability</h2>
@@ -219,7 +211,6 @@ const StorageForm = () => {
                             </div>
                         )}
 
-                        {/* View Slots Tab */}
                         {activeTab === "view" && (
                             <div className="space-y-4">
                                 <h2 className="text-xl font-semibold text-smart-green flex items-center">

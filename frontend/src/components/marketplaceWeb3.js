@@ -2,8 +2,8 @@ import Web3 from "web3";
 
 const web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
 
-// ✅ Smart Contract Address & ABI (Ensure it's deployed on Ganache)
-const contractAddress = "0x1406E4b10DEb8feA28BF50bd4F66DdABF7d9A5F5"; // Update if needed
+
+const contractAddress = "0x1406E4b10DEb8feA28BF50bd4F66DdABF7d9A5F5"; // edhi gaunche lo undi check chey
 const abi = [
     {
         "inputs": [
@@ -46,7 +46,7 @@ export const listCrop = async (name, quantity, price) => {
         const accounts = await web3.eth.getAccounts();
         await contract.methods.listCrop(name, quantity, price).send({
             from: accounts[0],
-            gas: 300000, // ✅ Ensure sufficient gas
+            gas: 300000, 
         });
         console.log("✅ Crop listed for sale!");
     } catch (error) {

@@ -6,11 +6,9 @@ const OrganicFarmUI = () => {
   const [activeFeature, setActiveFeature] = useState(null);
   const [isHovering, setIsHovering] = useState(false);
 
-  // Animation on component mount
   useEffect(() => {
     setIsVisible(true);
     
-    // Animate counter
     const interval = setInterval(() => {
       setStatsCount(prev => {
         if (prev < 86700) return prev + 867;
@@ -22,7 +20,6 @@ const OrganicFarmUI = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Features list with animations
   const features = [
     "Organic food contains more vitamins",
     "Eat organic because supply meets demand",
@@ -31,7 +28,6 @@ const OrganicFarmUI = () => {
 
   return (
     <div className="bg-gradient-to-b from-smart-green to-green-900 min-h-screen w-full p-4 md:p-8 flex items-center justify-center overflow-hidden">
-      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-16 -left-16 w-64 h-64 bg-yellow-400 rounded-full opacity-10 blur-3xl"></div>
         <div className="absolute top-1/2 -right-32 w-96 h-96 bg-green-300 rounded-full opacity-10 blur-3xl"></div>
@@ -41,7 +37,6 @@ const OrganicFarmUI = () => {
         <div 
           className={`flex flex-col md:flex-row gap-8 transition-all duration-1000 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
         >
-          {/* Left side with image */}
           <div 
             className="md:w-1/2 transition-all duration-700 delay-300"
             style={{ 
@@ -61,7 +56,6 @@ const OrganicFarmUI = () => {
               />
             </div>
             
-            {/* Stats box - now with counter animation */}
             <div 
               className="bg-smart-green text-white rounded-lg p-4 mt-4 border border-gray-600 flex items-center gap-3 max-w-xs transform hover:scale-105 transition-all duration-300 shadow-lg"
               style={{ 
@@ -86,7 +80,6 @@ const OrganicFarmUI = () => {
             </div>
           </div>
           
-          {/* Right side with text content */}
           <div 
             className="md:w-1/2 text-white"
             style={{ 

@@ -111,7 +111,6 @@ const MarketPrediction = () => {
   const [showTips, setShowTips] = useState(false);
   const [notification, setNotification] = useState({ show: true, message: "New price predictions available for all crops!" });
 
-  // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -119,7 +118,6 @@ const MarketPrediction = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Filter data based on search term and category
   useEffect(() => {
     const results = predictionData.filter((item) => {
       const matchesSearch = item.crop.toLowerCase().includes(searchTerm.toLowerCase());
@@ -133,7 +131,6 @@ const MarketPrediction = () => {
     setExpandedCard(expandedCard === cropName ? null : cropName);
   };
 
-  // Calculate percentage change from first to last prediction
   const calculateChange = (predictions) => {
     const firstPrice = predictions[0].price;
     const lastPrice = predictions[predictions.length - 1].price;
@@ -141,7 +138,6 @@ const MarketPrediction = () => {
     return percentChange.toFixed(2);
   };
 
-  // Format date to more readable format (e.g., "16 Mar")
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
@@ -154,7 +150,6 @@ const MarketPrediction = () => {
     { id: 'grain', name: 'Grains' }
   ];
 
-  // Get projected price difference for a given crop
   const getProjectedDifference = (predictions) => {
     const firstPrice = predictions[0].price;
     const lastPrice = predictions[predictions.length - 1].price;

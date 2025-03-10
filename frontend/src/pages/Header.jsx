@@ -5,7 +5,6 @@ const Header = () => {
   const [activeItem, setActiveItem] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   
-  // Handle scroll effect for header
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -36,7 +35,6 @@ const Header = () => {
       scrolled ? 'bg-[#263a28] shadow-lg py-2' : 'bg-[#334b35] py-4'
     } text-white px-6 md:px-16`}>
       <div className="flex items-center justify-between max-w-7xl mx-auto md:justify-start">
-        {/* Logo with animation */}
         <div className="text-2xl font-bold relative overflow-hidden group md:mr-12">
           <div className="flex items-center">
             <span className="text-green-300 mr-2 transform transition-all duration-300 group-hover:rotate-12 group-hover:scale-125">🌿</span>
@@ -49,7 +47,6 @@ const Header = () => {
           <span className="absolute -bottom-1 left-0 w-0 h-1 bg-gradient-to-r from-green-300 to-green-100 transition-all duration-700 ease-in-out group-hover:w-full rounded-full"></span>
         </div>
         
-        {/* Mobile menu button with animation */}
         <button 
           className="md:hidden focus:outline-none p-2 rounded-full bg-green-800 bg-opacity-30 hover:bg-opacity-70 transition-all duration-300 hover:scale-110" 
           onClick={() => setMenuOpen(!menuOpen)}
@@ -62,7 +59,6 @@ const Header = () => {
           </div>
         </button>
         
-        {/* Desktop menu - horizontally aligned */}
         <nav className="hidden md:flex md:justify-between md:flex-grow">
           <ul className="flex items-center space-x-8">
             {menuItems.map((item, index) => (
@@ -89,7 +85,6 @@ const Header = () => {
             ))}
           </ul>
           
-          {/* Login button aligned to the right */}
           <div className="flex items-center">
             <button className="bg-green-600 hover:bg-green-500 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400">
               Login
@@ -97,8 +92,7 @@ const Header = () => {
           </div>
         </nav>
       </div>
-      
-      {/* Mobile menu */}
+    
       <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
         menuOpen ? 'max-h-screen opacity-100 pt-6' : 'max-h-0 opacity-0'
       }`}>

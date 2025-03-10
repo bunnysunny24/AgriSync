@@ -22,19 +22,16 @@ const PlantDiseaseDetection = () => {
   const streamRef = useRef(null);
   const navigate = useNavigate();
 
-  // Animation on component mount
   useEffect(() => {
     setIsLoaded(true);
     
     return () => {
-      // Clean up camera stream if component unmounts
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
 
-  // Handle file upload
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -44,29 +41,23 @@ const PlantDiseaseDetection = () => {
     }
   };
 
-  // Open camera for capture
   const openCamera = async () => {
     try {
-      // Try different possible DroidCam URL formats
       const ipAddress = "10.9.143.196";
       const port = "4747";
       
-      // Option 1: Standard video endpoint
       const droidcamUrl = `http://${ipAddress}:${port}/video`;
       
-      // Check if video element exists
       if (!videoRef.current) {
         console.error("Video element is not available");
         alert("Camera initialization failed. Please try again.");
         return;
       }
       
-      // Create a new Image to test connectivity before setting up video
       const testConnection = new Image();
       testConnection.onload = () => {
         console.log("DroidCam connection successful");
-        
-        // Connection successful, set up video
+
         if (videoRef.current) {
           videoRef.current.src = droidcamUrl;
           videoRef.current.onloadedmetadata = () => {
@@ -92,14 +83,11 @@ const PlantDiseaseDetection = () => {
         tryAlternativeUrl();
       };
       
-      // Test connection with a simple image request
       testConnection.src = `http://${ipAddress}:${port}/mjpegfeed?640x480`;
       
-      // Function to try alternative URLs if the primary one fails
       const tryAlternativeUrl = () => {
         console.log("Trying alternative DroidCam URL format...");
         
-        // Check if video element exists before proceeding
         if (!videoRef.current) {
           console.error("Video element is not available during fallback");
           alert("Camera initialization failed. Please try again.");
@@ -107,7 +95,6 @@ const PlantDiseaseDetection = () => {
           return;
         }
         
-        // Option 2: Try MJPEG feed
         const mjpegUrl = `http://${ipAddress}:${port}/mjpegfeed`;
         videoRef.current.src = mjpegUrl;
         
@@ -128,11 +115,9 @@ const PlantDiseaseDetection = () => {
         };
       };
       
-      // Try a third option if needed
       const tryThirdOption = () => {
         console.log("Trying third DroidCam URL format...");
         
-        // Check if video element exists before proceeding
         if (!videoRef.current) {
           console.error("Video element is not available during second fallback");
           alert("Camera initialization failed. Please try again.");
@@ -140,7 +125,6 @@ const PlantDiseaseDetection = () => {
           return;
         }
         
-        // Option 3: WebRTC endpoint (if supported by your DroidCam version)
         const webrtcUrl = `http://${ipAddress}:${port}/videofeed`;
         videoRef.current.src = webrtcUrl;
         
@@ -170,7 +154,6 @@ const PlantDiseaseDetection = () => {
     }
   };
 
-  // Capture image from camera
   const captureImage = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -182,25 +165,20 @@ const PlantDiseaseDetection = () => {
     
     const context = canvas.getContext('2d');
     
-    // Set canvas dimensions to match video
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     
-    // Draw video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Convert canvas to blob/file
     canvas.toBlob((blob) => {
       const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
       setSelectedImage(file);
       setPreviewUrl(URL.createObjectURL(blob));
       
-      // Close camera
       closeCamera();
     }, 'image/jpeg', 0.95);
   };
 
-  // Close camera
   const closeCamera = () => {
     if (videoRef.current) {
       videoRef.current.pause();
@@ -210,7 +188,6 @@ const PlantDiseaseDetection = () => {
     setIsCameraOpen(false);
   };
 
-  // Send image to FastAPI for analysis
   const analyzeImage = async () => {
     if (!selectedImage) return;
 
@@ -235,7 +212,6 @@ const PlantDiseaseDetection = () => {
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-b from-smart-green to-green-900 p-6 overflow-hidden">
-      {/* Background particles */}
       <div className="fixed inset-0 z-0 opacity-10">
         {[...Array(20)].map((_, i) => (
           <div 
@@ -253,7 +229,6 @@ const PlantDiseaseDetection = () => {
         ))}
       </div>
       
-      {/* Main content */}
       <div className="max-w-6xl mx-auto relative z-10">
         <header className="text-center mb-8 pt-6">
           <div 
@@ -385,7 +360,6 @@ const PlantDiseaseDetection = () => {
               )}
             </div>
             
-            {/* Detection Result */}
             {detectionResult && !isCameraOpen && (
               <div className="mt-6 w-full bg-black bg-opacity-30 backdrop-blur-sm rounded-lg p-4 text-white animate-fadeIn">
                 <h3 className="text-lg font-bold text-smart-yellow border-b border-gray-700 pb-2 mb-3">Analysis Results</h3>
@@ -431,7 +405,6 @@ const PlantDiseaseDetection = () => {
             )}
           </div>
           
-          {/* Right section: Information and statistics */}
           <div className="flex flex-col gap-6">
             <div 
               className={`bg-gray-800 bg-opacity-25 backdrop-blur-sm rounded-lg p-6 transition-all duration-500 shadow-lg transform ${isLoaded ? 'translateY(0) opacity-100' : 'translateY(50px) opacity-0'}`}
@@ -495,7 +468,6 @@ const PlantDiseaseDetection = () => {
         </div>
       </div>
       
-      {/* Floating action button */}
       <div 
         className={`fixed bottom-6 right-6 z-20 transition-all duration-700 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
         style={{ transitionDelay: '1000ms' }}
@@ -510,7 +482,6 @@ const PlantDiseaseDetection = () => {
         </button>
       </div>
 
-      {/* Add CSS animation keyframes */}
       <style jsx>{`
         @keyframes float {
           0% { transform: translateY(0) rotate(0deg); }

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 const AgriNewsSection = () => {
-  // Sample news articles data with updated images to match the screenshots
   const articles = [
     {
       id: 1,
-      image: "news1.jpg", // Farm workers with tractor image
+      image: "news1.jpg", 
       date: "3 Sep, 2023",
       author: "Kevin Martin",
       comments: 2,
@@ -14,7 +13,7 @@ const AgriNewsSection = () => {
     },
     {
       id: 2,
-      image: "news2.webp", // Cow in field at sunset image
+      image: "news2.webp", 
       date: "3 Sep, 2023",
       author: "Kevin Martin",
       comments: 3,
@@ -23,7 +22,7 @@ const AgriNewsSection = () => {
     },
     {
       id: 3,
-      image: "news3.jpg", // Agricultural robots in field image
+      image: "news3.jpg", 
       date: "3 Sep, 2023",
       author: "Kevin Martin",
       comments: 1,
@@ -32,10 +31,8 @@ const AgriNewsSection = () => {
     }
   ];
 
-  // Animation states
   const [isVisible, setIsVisible] = useState(false);
 
-  // Trigger entrance animations on component mount or when scrolled into view
   useEffect(() => {
     const handleScroll = () => {
       const element = document.getElementById('news-section');
@@ -47,13 +44,10 @@ const AgriNewsSection = () => {
       }
     };
 
-    // Check on initial load
     handleScroll();
     
-    // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
     
-    // Cleanup
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -61,7 +55,6 @@ const AgriNewsSection = () => {
 
   return (
     <div id="news-section" className="relative py-16 bg-smart-green">
-      {/* Single green background instead of dual-tone */}
       <div className="max-w-6xl mx-auto px-4">
         <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h3 className="text-smart-yellow font-semibold mb-2 tracking-wider uppercase">
