@@ -8,7 +8,7 @@ from sklearn.metrics import mean_absolute_error
 
 processed_files = {
     "banana": "processed_data/banana_processed.csv",
-    "onion": "processed_data/onion_processed.csv",
+    "onion": "processed_data/onioacn_processed.csv",
     "tomato": "processed_data/tomato_processed.csv",
     "wheat": "processed_data/wheat_processed.csv",
     "carrot": "processed_data/carrot_processed.csv"
