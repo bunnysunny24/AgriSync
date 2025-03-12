@@ -32,6 +32,7 @@ python scripts/predict_weather.py
 python scripts/weather_alerts.py
 
 python scripts/train_soil_model.py 
+python scripts/predict_soil.py
 
 for blockchain
 go to cd frontend
