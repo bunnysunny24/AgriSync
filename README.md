@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+# 🌿 AgriSync: AI-Powered Smart Farming & Marketplace System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to **AgriSync**, a smart agriculture platform that leverages **AI/ML**, **Deep Learning**, and **Blockchain** to empower farmers with real-time insights, automate crop health monitoring, and provide transparent crop transactions.
 
-## Available Scripts
+🔗 GitHub: [https://github.com/bunnysunny24/AgriSync](https://github.com/bunnysunny24/AgriSync)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🌾 Project Overview
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**AgriSync** is a full-stack system built for smart farming and crop traceability. It brings together:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- 🌿 AI-based **Plant Disease Detection** via images
+- 📈 **Crop Price Prediction** based on historical data
+- 🌦️ **Weather Forecasting & Alerts**
+- 🌱 **Soil Quality Prediction**
+- 🔗 **Blockchain Marketplace** for transparent crop transactions
+- 🎨 A modern, user-friendly **React-based UI**
 
-### `npm test`
+Farmers can make better decisions, detect diseases early, forecast crop prices, and sell safely using blockchain-backed records.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## ⚙️ How It Works
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🧠 AI + ML Models
+- **Plant Disease Detection**: Deep learning model (EfficientNetB4) classifies leaf diseases using uploaded images.
+- **Price Prediction**: Machine learning models (Random Forest, XGBoost) trained on crop price data.
+- **Weather Forecasting**: Uses time-series ML models to predict upcoming weather patterns.
+- **Soil Quality Detection**: Classifies soil type using trained models based on NPK values and other soil parameters.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 🔗 Blockchain Integration
+- A smart contract (Solidity) enables **secure and transparent transactions** for crop selling.
+- Farmers and buyers interact via a React UI, with Web3.js handling the contract calls.
+- Transactions are stored on the **Ethereum** testnet (Ganache/Truffle), ensuring trust.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 🌐 Frontend Interface
+- Built using **React** and styled with **Tailwind CSS**.
+- Farmers can:
+  - Upload plant images
+  - View predicted prices and weather alerts
+  - See crop requests
+  - List items for sale on the blockchain marketplace
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🧰 Tech Stack
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| Layer         | Technologies Used                                               |
+|---------------|-----------------------------------------------------------------|
+| **Frontend**  | React.js, Tailwind CSS, Web3.js                                 |
+| **Backend**   | FastAPI, Python, Uvicorn                                        |
+| **AI/ML**     | TensorFlow, Keras, Scikit-learn, XGBoost, OpenCV                |
+| **Blockchain**| Solidity, Truffle, Ganache, Ethereum Testnet                    |
+| **Data Tools**| Pandas, NumPy, Matplotlib                                       |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 📦 Key Modules
 
-## Learn More
+- `predict_plantdoc.py`: Plant disease prediction
+- `predict_with_graph.py`: Crop price prediction with graph generation
+- `predict_weather.py`: Weather forecasting using ML
+- `predict_soil.py`: Predicts soil type
+- Smart contract: Crop listing, purchasing, and verification via blockchain
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🧑‍🌾 Why AgriSync?
 
-### Code Splitting
+- Reduce crop loss with early disease detection
+- Get real-time, data-backed market prices
+- Sell crops confidently with blockchain traceability
+- Empower farmers through AI-driven decisions
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## 📍 Live Demo / GitHub
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Check the repository and explore more:  
+👉 [AgriSync GitHub Repo](https://github.com/bunnysunny24/AgriSync)
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+> **“AgriSync bridges AI and agriculture, creating a future-ready farming ecosystem.”**
