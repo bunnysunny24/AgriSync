@@ -1,97 +1,98 @@
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-import os
-import json
+from tensorflow.keras.applications import EfficientNetB4
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, LearningRateScheduler
+import os, json
 
 # Paths
 DATA_DIR = r"D:\Bunny\AgriSync\backend\Soil"
 TRAIN_DIR = os.path.join(DATA_DIR, "train")
 TEST_DIR = os.path.join(DATA_DIR, "test")
-IMG_SIZE = (180, 180)
-BATCH_SIZE = 32
-EPOCHS = 30
-MODEL_PATH = r"D:\Bunny\AgriSync\backend\models\soil_classifier.keras"
+MODEL_PATH = r"D:\Bunny\AgriSync\backend\models\soil_classifier_best.keras"
 LABELS_PATH = r"D:\Bunny\AgriSync\backend\models\class_names.json"
+IMG_SIZE = (224, 224)
+BATCH_SIZE = 32
+EPOCHS = 70
 
-# ✅ Get consistent class names (sorted by directory name)
+# ✅ Get consistent class names and save them
 class_names = sorted(os.listdir(TRAIN_DIR))
-print("📊 Class Distribution:")
-for class_name in class_names:
-    folder = os.path.join(TRAIN_DIR, class_name)
-    count = len(os.listdir(folder))
-    print(f" - {class_name}: {count} images")
-
-# ✅ Save class names for inference time
 with open(LABELS_PATH, 'w') as f:
     json.dump(class_names, f)
-print(f"✅ Class names saved to: {LABELS_PATH}")
+print("✅ Class names saved:", class_names)
 
-# ✅ Load dataset
-def safe_load_dataset(directory):
-    try:
-        dataset = tf.keras.preprocessing.image_dataset_from_directory(
-            directory,
-            image_size=IMG_SIZE,
-            batch_size=BATCH_SIZE,
-            label_mode='categorical',  # important for softmax output
-            shuffle=True,
-            seed=42
-        )
-        dataset = dataset.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
-        print(f"✅ Loaded dataset from: {directory}")
-        return dataset
-    except Exception as e:
-        print(f"❌ Error loading dataset from {directory}: {e}")
-        return None
-
-print("🔍 Loading training data...")
-train_ds = safe_load_dataset(TRAIN_DIR)
-
-print("🔍 Loading test data...")
-val_ds = safe_load_dataset(TEST_DIR)
-
-# ✅ Data Augmentation
-data_augmentation = keras.Sequential([
-    layers.RandomFlip("horizontal_and_vertical"),
-    layers.RandomRotation(0.2),
-    layers.RandomZoom(0.1),
-])
-
-# ✅ Enhanced CNN Model
-model = keras.Sequential([
-    layers.Input(shape=(180, 180, 3)),
-    data_augmentation,
-    layers.Rescaling(1./255),
-
-    layers.Conv2D(32, 3, padding='same', activation='relu'),
-    layers.MaxPooling2D(),
-
-    layers.Conv2D(64, 3, padding='same', activation='relu'),
-    layers.MaxPooling2D(),
-
-    layers.Conv2D(128, 3, padding='same', activation='relu'),
-    layers.MaxPooling2D(),
-
-    layers.Conv2D(256, 3, padding='same', activation='relu'),
-    layers.MaxPooling2D(),
-
-    layers.Flatten(),
-    layers.Dense(256, activation='relu'),
-    layers.Dropout(0.5),
-    layers.Dense(len(class_names), activation='softmax')  # output layer for classification
-])
-
-model.compile(
-    optimizer='adam',
-    loss='categorical_crossentropy',
-    metrics=['accuracy']
+# ✅ Data augmentation
+train_datagen = ImageDataGenerator(
+    rescale=1.0 / 255,
+    rotation_range=60,
+    width_shift_range=0.5,
+    height_shift_range=0.5,
+    shear_range=0.5,
+    zoom_range=0.5,
+    horizontal_flip=True,
+    fill_mode="nearest"
 )
 
-# ✅ Train the model
-print("🚀 Training model...")
-history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS)
+val_datagen = ImageDataGenerator(rescale=1.0 / 255)
 
-# ✅ Save the trained model
+train_data = train_datagen.flow_from_directory(
+    directory=TRAIN_DIR,
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    class_mode="categorical"
+)
+
+val_data = val_datagen.flow_from_directory(
+    directory=TEST_DIR,
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    class_mode="categorical"
+)
+
+# ✅ Build model using EfficientNetB4
+base_model = EfficientNetB4(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
+base_model.trainable = True  # Fine-tune entire model
+
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(1024, activation="relu")(x)
+x = BatchNormalization()(x)
+x = Dropout(0.5)(x)
+x = Dense(512, activation="relu")(x)
+x = BatchNormalization()(x)
+x = Dropout(0.5)(x)
+output_layer = Dense(len(class_names), activation="softmax")(x)
+
+model = Model(inputs=base_model.input, outputs=output_layer)
+
+# ✅ Compile
+model.compile(
+    optimizer=tf.keras.optimizers.AdamW(learning_rate=3e-4),
+    loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
+    metrics=["accuracy"]
+)
+
+# ✅ Callbacks
+def one_cycle_lr(epoch, lr):
+    base_lr = 1e-5
+    max_lr = 1e-3
+    cycle = 20
+    return base_lr + (max_lr - base_lr) * max(0, (1 - epoch / cycle))
+
+early_stopping = EarlyStopping(monitor="val_loss", patience=15, restore_best_weights=True)
+reduce_lr = ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=6, min_lr=5e-6)
+lr_callback = LearningRateScheduler(one_cycle_lr)
+
+# ✅ Train
+print("🚀 Training EfficientNetB4 model on Soil dataset...")
+model.fit(
+    train_data,
+    validation_data=val_data,
+    epochs=EPOCHS,
+    callbacks=[early_stopping, reduce_lr, lr_callback]
+)
+
+# ✅ Save model
 model.save(MODEL_PATH)
-print(f"✅ Model saved successfully at: {MODEL_PATH}")
+print(f"✅ EfficientNetB4 Soil Classifier saved at: {MODEL_PATH}")
