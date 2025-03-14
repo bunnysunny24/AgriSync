@@ -55,46 +55,49 @@ SOIL_INFO = {
 def load_and_prepare_image(image_path):
     try:
         img = Image.open(image_path).convert("RGB")
+        print(f"🖼️ Original image size: {img.size}")
         img = img.resize(IMG_SIZE)
+        print(f"📏 Resized to: {IMG_SIZE}")
         img_array = np.array(img) / 255.0
+        print(f"📊 Image array shape after normalization: {img_array.shape}")
         return np.expand_dims(img_array, axis=0)
     except Exception as e:
         print(f"❌ Failed to process image: {e}")
         return None
+
 
 def predict_soil_type(image_path):
     print(f"🔍 Predicting soil type for: {image_path}")
 
     img_tensor = load_and_prepare_image(image_path)
     if img_tensor is None:
-        return
+        print("❌ Image preprocessing failed.")
+        return None
 
     print("📦 Loading model...")
-    model = tf.keras.models.load_model(MODEL_PATH)
+    if not os.path.exists(MODEL_PATH):
+        print(f"❌ Model not found at {MODEL_PATH}")
+        return None
 
-    prediction = model.predict(img_tensor)[0]
-    predicted_index = np.argmax(prediction)
-    confidence = prediction[predicted_index] * 100
-    predicted_class = CLASS_NAMES[predicted_index]
+    try:
+        model = tf.keras.models.load_model(MODEL_PATH)
+        print("✅ Model loaded successfully.")
+    except Exception as e:
+        print(f"❌ Error loading model: {e}")
+        return None
 
-    print(f"\n🌱 Predicted Soil Type: {predicted_class}")
-    print(f"🔬 Confidence: {confidence:.2f}%")
+    try:
+        print(f"🧪 Model input shape: {model.input_shape}")
+        print(f"🧪 Model output shape: {model.output_shape}")
+        print(f"🧪 Image tensor shape: {img_tensor.shape}")
 
-    # 🎯 Recommendation Section
-    soil_data = SOIL_INFO.get(predicted_class)
-    if soil_data:
-        print(f"\n🧠 About {predicted_class}: {soil_data['notes']}")
-        print("\n✅ Suitable Crops:")
-        for crop in soil_data['crops']:
-            print(f"  - {crop}")
+        prediction = model.predict(img_tensor)[0]
+        predicted_index = int(np.argmax(prediction))
+        confidence = float(prediction[predicted_index]) * 100
+        predicted_class = CLASS_NAMES[predicted_index]
 
-        print("\n🛠️  Soil Care Tips:")
-        for tip in soil_data['care']:
-            print(f"  • {tip}")
-    else:
-        print("ℹ️ No info available for this soil type.")
-
-if __name__ == "__main__":
-    # 🔁 Change this path to test another image
-    SAMPLE_IMAGE_PATH = r"D:\Bunny\AgriSync\backend\Soil\test\Black Soil\Black_1.jpg"
-    predict_soil_type(SAMPLE_IMAGE_PATH)
+        print(f"✅ Prediction: {predicted_class} ({confidence:.2f}%)")
+        print(f"📊 Raw prediction values: {prediction}")
+    except Exception as e:
+        print(f"❌ Prediction failed: {e}")
+        return None

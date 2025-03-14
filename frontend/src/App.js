@@ -10,6 +10,7 @@ import MarketPrediction from './pages/MarketPrediction';
 import WeatherForecast from './pages/WeatherForecast';
 import StorageForm from "./components/StorageForm";  
 import Marketplace from "./components/Marketplace"; 
+import SoilPredictor from './pages/SoilPredictor';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -67,6 +68,7 @@ function App() {
           <Route path="/Marketplace" element={<Marketplace />} />
           <Route path="/LoginPage" element={<LoginPage />} />
           <Route path="/RegisterPage" element={<RegisterPage />} />
+          <Route path="/SoilPredictor" element={<SoilPredictor />} />
           <Route path="/" element={
             <div className="content-container">
               <div className="scroll-reveal">
