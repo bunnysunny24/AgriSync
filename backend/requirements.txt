@@ -1,4 +1,53 @@
 cd backend
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+import joblib
+import os
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+import os
+import tensorflow as tf
+from tensorflow.keras.applications import EfficientNetB4
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout, BatchNormalization
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+import pandas as pd
+import joblib
+import os
+from sklearn.model_selection import TimeSeriesSplit
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
+import os
+from PIL import Image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import joblib
+import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
+import joblib
+import pandas as pd
+import numpy as np
+import os
+import cv2
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import img_to_array
+import os
+from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
+import shutil
+from scripts.predict_plantdoc import predict_disease
+try:
+    from scripts.predict_with_graph import get_price_predictions
+
 
 pandas
 os
@@ -32,6 +81,7 @@ python scripts/train_weather_model.py
 python scripts/predict_weather.py
 python scripts/weather_alerts.py
 
+for soil
 python scripts/train_soil_model.py 
 python scripts/predict_soil.py
 
@@ -40,13 +90,6 @@ go to cd frontend
 npm start
 truffle compile
 truffle migrate --reset --network development
-
-// import StorageForm from "./components/StorageForm";  // ✅ Check this path
- // import Marketplace from "./components/Marketplace";  // ✅ Check this path
-//<h1>🌾 Crop Storage & Marketplace</h1>
-// <StorageForm />
-//<hr />
-// <Marketplace />
 
 uvicorn scripts.main:app --host 0.0.0.0 --port=8000 --reload
 

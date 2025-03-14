@@ -1,0 +1,22 @@
+A. Plant Price Detection:
+python scripts/preprocess_data.py  
+python scripts/train_models.py
+python scripts/predict.py 
+python scripts/predict_with_graph.py
+
+B. Plant Disease Detection:
+python scripts/preprocess_plantdoc.py
+python scripts/train_plantdoc_model.py
+python scripts/predict_plantdoc.py
+
+C. Weather Prediction:
+python scripts/fetch_weather.py
+python scripts/train_weather_model.py
+python scripts/predict_weather.py
+python scripts/weather_alerts.py
+
+D. Soil Analysis:
+python scripts/train_soil_model.py 
+python scripts/predict_soil.py
+
+uvicorn scripts.main:app --host 0.0.0.0 --port=8000 --reload

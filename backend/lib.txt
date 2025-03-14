@@ -1,0 +1,23 @@
+# Core libraries
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+joblib
+
+# Deep learning
+tensorflow
+tensorflow-addons
+keras-cv --upgrade
+
+# Image processing
+opencv-python
+Pillow
+
+# ML algorithms
+xgboost
+
+# API
+fastapi
+uvicorn

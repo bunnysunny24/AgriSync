@@ -1,0 +1,10 @@
+# 💠 Blockchain & Frontend
+
+## React Frontend
+cd frontend
+npm install
+npm start
+
+## Truffle + Ganache
+truffle compile
+truffle migrate --reset --network development
