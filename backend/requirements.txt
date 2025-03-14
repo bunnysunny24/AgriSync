@@ -1,6 +1,7 @@
 cd backend
 
 pandas
+os
 numpy
 matplotlib
 seaborn
