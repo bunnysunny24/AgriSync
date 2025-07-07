@@ -201,21 +201,26 @@ def get_predictions_for_graph():
 IMG_SIZE = (180, 180)
 
 soil_info = {
+    "Alluvial soil": {
+        "notes": "Fertile soil formed by river deposits, excellent for agriculture.",
+        "crops": ["Rice", "Wheat", "Corn", "Sugarcane", "Cotton"],
+        "care": ["Ensure proper drainage", "Regular organic matter addition", "Monitor pH levels"]
+    },
+    "Black Soil": {
+        "notes": "Rich in clay and organic matter, retains moisture well.",
+        "crops": ["Cotton", "Wheat", "Jowar", "Linseed", "Tobacco"],
+        "care": ["Improve drainage", "Add organic compost", "Deep plowing recommended"]
+    },
     "Clay soil": {
-        "notes": "Clay soil retains water and is rich in nutrients but can be dense.",
-        "crops": ["Rice", "Broccoli", "Cabbage"],
-        "care": ["Improve drainage", "Avoid overwatering", "Add compost"],
+        "notes": "Dense soil with high water retention, can be challenging for some crops.",
+        "crops": ["Rice", "Wheat", "Barley", "Oats"],
+        "care": ["Improve drainage", "Add organic matter", "Avoid working when wet"]
     },
-    "Sandy soil": {
-        "notes": "Sandy soil has large particles and drains quickly.",
-        "crops": ["Carrots", "Peanuts", "Watermelon"],
-        "care": ["Add organic matter", "Mulch frequently", "Fertilize regularly"],
-    },
-    "Loamy soil": {
-        "notes": "Loamy soil is ideal for most plants, with a balanced texture and nutrients.",
-        "crops": ["Tomatoes", "Wheat", "Sugarcane"],
-        "care": ["Maintain pH level", "Use organic fertilizers", "Avoid compaction"],
-    },
+    "Red soil": {
+        "notes": "Iron-rich soil, generally well-drained but may need nutrient supplementation.",
+        "crops": ["Millet", "Groundnut", "Potato", "Tobacco", "Pulses"],
+        "care": ["Add lime if acidic", "Regular fertilization", "Organic matter addition"]
+    }
 }
 
 @app.post("/predict-soil")
