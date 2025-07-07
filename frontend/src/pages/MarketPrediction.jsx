@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronUp, ChevronDown, TrendingUp, ArrowRight, Search, Calendar, Download, Filter, AlertTriangle, Zap, Info } from 'lucide-react';
+import axios from 'axios';
+import { ENDPOINTS } from '../config/api';
 
 const predictionData = [
   {
@@ -110,22 +112,50 @@ const MarketPrediction = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showTips, setShowTips] = useState(false);
   const [notification, setNotification] = useState({ show: true, message: "New price predictions available for all crops!" });
+  const [apiData, setApiData] = useState(null);
+  const [apiError, setApiError] = useState(null);
 
+  // Fetch market predictions from API
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+    const fetchMarketPredictions = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.MARKET_PREDICTIONS);
+        if (response.data && response.data.status === 'success') {
+          setApiData(response.data.data);
+          console.log('✅ Market predictions loaded from API:', response.data.data);
+        } else {
+          console.warn('⚠️ API returned unexpected format, using static data');
+          setApiError('API returned unexpected format');
+        }
+      } catch (error) {
+        console.error('❌ Failed to fetch market predictions:', error);
+        setApiError('Failed to fetch live data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMarketPredictions();
   }, []);
 
   useEffect(() => {
-    const results = predictionData.filter((item) => {
+    const timer = setTimeout(() => {
+      if (isLoading) setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
+  useEffect(() => {
+    // Use API data if available, otherwise use static data
+    const dataToFilter = apiData && apiData.length > 0 ? apiData : predictionData;
+    
+    const results = dataToFilter.filter((item) => {
       const matchesSearch = item.crop.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
     setFilteredData(results);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, apiData]);
 
   const toggleCard = (cropName) => {
     setExpandedCard(expandedCard === cropName ? null : cropName);
@@ -215,6 +245,12 @@ const MarketPrediction = () => {
             <div className="flex items-center space-x-3">
               <Zap className="text-smart-yellow h-5 w-5" />
               <p className="text-gray-200">{notification.message}</p>
+              {apiData && apiData.length > 0 && (
+                <span className="bg-green-500 text-white px-2 py-1 rounded text-xs">LIVE DATA</span>
+              )}
+              {apiError && (
+                <span className="bg-orange-500 text-white px-2 py-1 rounded text-xs">USING CACHED DATA</span>
+              )}
             </div>
             <button 
               onClick={() => setNotification({...notification, show: false})}

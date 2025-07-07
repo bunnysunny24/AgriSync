@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ENDPOINTS } from "../config/api";
 
 const PlantDiseaseDetection = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -198,7 +199,7 @@ const PlantDiseaseDetection = () => {
     formData.append("file", selectedImage);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/predict", formData, {
+      const response = await axios.post(ENDPOINTS.PREDICT_DISEASE, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

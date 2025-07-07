@@ -13,6 +13,7 @@ import Marketplace from "./components/Marketplace";
 import SoilPredictor from './pages/SoilPredictor';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ApiTestPage from './pages/ApiTestPage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
           <Route path="/LoginPage" element={<LoginPage />} />
           <Route path="/RegisterPage" element={<RegisterPage />} />
           <Route path="/SoilPredictor" element={<SoilPredictor />} />
+          <Route path="/api-test" element={<ApiTestPage />} />
           <Route path="/" element={
             <div className="content-container">
               <div className="scroll-reveal">

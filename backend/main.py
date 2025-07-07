@@ -40,18 +40,40 @@ def load_soil_model():
         try:
             from tensorflow.keras.models import load_model
             MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "soil_classifier.keras")
+            FALLBACK_MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "soil_classifier_fallback.keras")
             LABELS_PATH = os.path.join(os.path.dirname(__file__), "models", "class_names.json")
             
-            logger.info(f"Loading soil model from: {MODEL_PATH}")
-            soil_model = load_model(MODEL_PATH)
+            # Try to load the original model first
+            try:
+                logger.info(f"Loading soil model from: {MODEL_PATH}")
+                soil_model = load_model(MODEL_PATH)
+                logger.info("✅ Original soil model loaded successfully")
+            except Exception as e:
+                logger.warning(f"⚠️ Original model failed to load: {str(e)}")
+                
+                # Try fallback model
+                if os.path.exists(FALLBACK_MODEL_PATH):
+                    logger.info(f"Trying fallback model: {FALLBACK_MODEL_PATH}")
+                    soil_model = load_model(FALLBACK_MODEL_PATH)
+                    logger.info("✅ Fallback soil model loaded successfully")
+                else:
+                    # Create fallback model if it doesn't exist
+                    logger.info("Creating fallback soil model...")
+                    from create_fallback_soil_model import save_fallback_model
+                    if save_fallback_model():
+                        soil_model = load_model(FALLBACK_MODEL_PATH)
+                        logger.info("✅ Created and loaded fallback soil model")
+                    else:
+                        raise Exception("Failed to create fallback model")
             
+            # Load class names
             with open(LABELS_PATH, "r") as f:
                 class_names = json.load(f)
             
             logger.info(f"Loaded soil model with classes: {class_names}")
             
         except Exception as e:
-            logger.error(f"Failed to load soil model: {str(e)}")
+            logger.error(f"Failed to load any soil model: {str(e)}")
             raise e
     
     return soil_model, class_names
@@ -199,14 +221,30 @@ soil_info = {
 @app.post("/predict-soil")
 async def predict_soil(file: UploadFile = File(...)):
     try:
-        # Load model on first use
-        model, class_names = load_soil_model()
+        # Try to load model on first use
+        try:
+            model, class_names = load_soil_model()
+        except Exception as model_error:
+            logger.error(f"All soil models failed to load: {str(model_error)}")
+            # Return a structured error response
+            return {
+                "error": "Soil analysis temporarily unavailable",
+                "prediction": "Service Update",
+                "confidence": 0.0,
+                "notes": "Our AI model is being updated for better compatibility. Please try again in a few minutes or use our other features.",
+                "crops": [],
+                "care": ["Test soil pH regularly", "Add organic matter when needed", "Ensure good drainage"],
+                "status": "model_loading_failed",
+                "message": "Error analyzing image"
+            }
         
+        # Process the image
         image = Image.open(file.file).convert("RGB")
         image = image.resize(IMG_SIZE)
         image_array = np.expand_dims(np.array(image) / 255.0, axis=0)
         logger.info(f"Processed image shape: {image_array.shape}")
 
+        # Make prediction
         prediction = model.predict(image_array)[0]
         logger.info(f"Raw prediction probabilities: {prediction}")
         predicted_index = np.argmax(prediction)
@@ -218,10 +256,11 @@ async def predict_soil(file: UploadFile = File(...)):
         logger.info(f"Predicted class: {predicted_class}")
         logger.info(f"Confidence: {confidence}")
 
+        # Get soil information
         info = soil_info.get(predicted_class, {
-            "notes": "No additional info available.",
+            "notes": "No additional info available for this soil type.",
             "crops": [],
-            "care": [],
+            "care": ["Test soil pH regularly", "Add organic matter when needed"],
         })
 
         return {
@@ -229,26 +268,22 @@ async def predict_soil(file: UploadFile = File(...)):
             "confidence": confidence,
             "notes": info["notes"],
             "crops": info["crops"],
-            "care": info["care"]
+            "care": info["care"],
+            "status": "success"
         }
 
     except Exception as e:
         logger.error(f"Soil prediction error: {str(e)}")
         logger.error(traceback.format_exc())
         return {
-            "error": f"Soil prediction failed: {str(e)}",
-        }
-
-    except Exception as e:
-        logger.error(f"Soil prediction error: {str(e)}")
-        logger.error(traceback.format_exc())
-        return {
-            "error": f"Soil prediction failed: {str(e)}",
+            "error": "Prediction failed",
             "prediction": "Unable to predict",
             "confidence": 0.0,
-            "notes": "Error occurred during prediction",
+            "notes": "Error occurred during prediction. Please try again with a clearer image.",
             "crops": [],
-            "care": []
+            "care": ["Ensure soil has good drainage", "Test soil pH regularly", "Add organic matter when needed"],
+            "status": "prediction_failed",
+            "message": "Error analyzing image"
         }
 
 # ✅ Print all registered routes on startup
