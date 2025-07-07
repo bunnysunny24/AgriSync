@@ -1,25 +1,25 @@
 # Core Python packages
-numpy>=1.26.0
-pandas>=2.1.4
-matplotlib>=3.8.2
+numpy==1.26.4
+pandas==2.1.4
+matplotlib==3.8.4
 
-# Machine Learning packages
-tensorflow>=2.15.0
-scikit-learn>=1.3.2
-xgboost>=2.0.3
-joblib>=1.3.2
+# Machine Learning packages - TensorFlow 2.13 is the last stable for Python 3.11
+tensorflow==2.13.1
+scikit-learn==1.3.2
+xgboost==2.0.3
+joblib==1.3.2
 
 # Computer Vision packages
-opencv-python-headless>=4.8.1.78
-Pillow>=10.1.0
+opencv-python-headless==4.8.1.78
+Pillow==10.1.0
 
 # FastAPI and web server packages
-fastapi>=0.104.1
-uvicorn[standard]>=0.24.0
-python-multipart>=0.0.6
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
 
 # HTTP requests
-requests>=2.31.0
+requests==2.31.0
 
 # Python standard library (no installation needed)
 # os, shutil, uuid, io, json, datetime
