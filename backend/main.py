@@ -157,10 +157,13 @@ async def predict_soil(file: UploadFile = File(...)):
 
 # ✅ Print all registered routes on startup
 @app.on_event("startup")
-async def list_routes():
-    print("\n📋 Registered Routes:")
+async def startup_event():
+    print("\n📋 AgriSync API Starting...")
+    print("📋 Registered Routes:")
     for route in app.routes:
-        print(f"➡️  {route.path}")
+        if hasattr(route, 'path'):
+            print(f"➡️  {route.path}")
+    print("✅ AgriSync API is ready!")
 
 if __name__ == "__main__":
     import uvicorn
