@@ -1,11 +1,12 @@
+"""
+AgriSync Backend API
+Main FastAPI application
+"""
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 import shutil
-from predict_plantdoc import predict_disease
-from predict_with_graph import get_price_predictions
-from predict_soil import predict_soil_type
 import uuid
 from PIL import Image
 from fastapi.responses import JSONResponse
@@ -14,8 +15,12 @@ import numpy as np
 from tensorflow.keras.models import load_model
 import json
 
+# Import prediction functions
+from scripts.predict_plantdoc import predict_disease
+from scripts.predict_with_graph import get_price_predictions
+from scripts.predict_soil import predict_soil_type
 
-app = FastAPI()
+app = FastAPI(title="AgriSync API", version="1.0.0")
 
 # ✅ CORS for frontend
 app.add_middleware(
@@ -31,20 +36,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # ✅ Mount graph images folder
-GRAPH_DIR = os.path.join(os.path.dirname(__file__), "predicted_graphs")
+GRAPH_DIR = os.path.join(os.path.dirname(__file__), "scripts", "predicted_graphs")
 os.makedirs(GRAPH_DIR, exist_ok=True)
 app.mount("/graphs", StaticFiles(directory=GRAPH_DIR), name="graphs")
 
-# ✅ Health check route
+# ✅ Root endpoint
+@app.get("/")
+def root():
+    return {"message": "AgriSync API is running", "status": "healthy", "version": "1.0.0"}
+
+# ✅ Health check routes
 @app.get("/health")
 def health_check():
     return {"status": "API is running"}
 
-# ✅ Health Check Endpoint
 @app.get("/healthz")
-def health_check():
+def health_check_render():
     return {"status": "healthy", "message": "AgriSync API is running"}
 
 # ✅ Plant Disease Prediction
@@ -74,15 +82,19 @@ def get_predictions_for_graph():
         return {"status": "error", "message": str(e)}
 
 # ✅ Soil Type Prediction
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "soil_classifier.keras")
-LABELS_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "class_names.json")
-model = load_model(MODEL_PATH)
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "soil_classifier.keras")
+LABELS_PATH = os.path.join(os.path.dirname(__file__), "models", "class_names.json")
 
-with open(LABELS_PATH, "r") as f:
-    class_names = json.load(f)
+try:
+    model = load_model(MODEL_PATH)
+    with open(LABELS_PATH, "r") as f:
+        class_names = json.load(f)
+    print("📚 Loaded class names:", class_names)
+except Exception as e:
+    print(f"❌ Error loading soil model: {e}")
+    model = None
+    class_names = []
 
-print("📚 Loaded class names:", class_names)
-    
 IMG_SIZE = (180, 180)
 
 soil_info = {
@@ -101,12 +113,14 @@ soil_info = {
         "crops": ["Tomatoes", "Wheat", "Sugarcane"],
         "care": ["Maintain pH level", "Use organic fertilizers", "Avoid compaction"],
     },
-    # Add more if needed
 }
 
 @app.post("/predict-soil")
 async def predict_soil(file: UploadFile = File(...)):
     try:
+        if model is None:
+            return {"error": "Soil classifier model not loaded"}
+            
         image = Image.open(file.file).convert("RGB")
         image = image.resize(IMG_SIZE)
         image_array = np.expand_dims(np.array(image) / 255.0, axis=0)
@@ -141,10 +155,14 @@ async def predict_soil(file: UploadFile = File(...)):
     except Exception as e:
         return {"error": str(e)}
 
-
-# ✅ Print all registered routes
+# ✅ Print all registered routes on startup
 @app.on_event("startup")
 async def list_routes():
     print("\n📋 Registered Routes:")
     for route in app.routes:
         print(f"➡️  {route.path}")
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
