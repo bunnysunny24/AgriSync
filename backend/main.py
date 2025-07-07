@@ -14,11 +14,15 @@ import io
 import numpy as np
 from tensorflow.keras.models import load_model
 import json
+import sys
+
+# Add scripts directory to Python path
+sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
 
 # Import prediction functions
-from scripts.predict_plantdoc import predict_disease
-from scripts.predict_with_graph import get_price_predictions
-from scripts.predict_soil import predict_soil_type
+from predict_plantdoc import predict_disease
+from predict_with_graph import get_price_predictions
+from predict_soil import predict_soil_type
 
 app = FastAPI(title="AgriSync API", version="1.0.0")
 

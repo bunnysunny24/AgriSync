@@ -3,9 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 import shutil
-from predict_plantdoc import predict_disease
-from predict_with_graph import get_price_predictions
-from predict_soil import predict_soil_type
+from scripts.predict_plantdoc import predict_disease
+from scripts.predict_with_graph import get_price_predictions
+from scripts.predict_soil import predict_soil_type
 import uuid
 from PIL import Image
 from fastapi.responses import JSONResponse
