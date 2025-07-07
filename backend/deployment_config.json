@@ -1,0 +1,23 @@
+{
+  "tensorflow_version": "2.19.0",
+  "python_version": "3.11",
+  "model_format": "keras",
+  "input_size": [
+    224,
+    224,
+    3
+  ],
+  "preprocessing": {
+    "rescale": "1/255.0",
+    "resize": [
+      224,
+      224
+    ]
+  },
+  "deployment_tips": [
+    "Use TensorFlow 2.10+ for best compatibility",
+    "Ensure consistent image preprocessing",
+    "Use explicit input shapes",
+    "Test model loading before deployment"
+  ]
+}
