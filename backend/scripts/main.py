@@ -42,6 +42,11 @@ app.mount("/graphs", StaticFiles(directory=GRAPH_DIR), name="graphs")
 def health_check():
     return {"status": "API is running"}
 
+# ✅ Health Check Endpoint
+@app.get("/healthz")
+def health_check():
+    return {"status": "healthy", "message": "AgriSync API is running"}
+
 # ✅ Plant Disease Prediction
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
