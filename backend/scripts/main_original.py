@@ -14,35 +14,30 @@ import numpy as np
 from tensorflow.keras.models import load_model
 import json
 
-
 app = FastAPI()
 
-# ✅ CORS for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://superb-patience-production.up.railway.app",  # Your deployed frontend
+        "https://react-frontend-production-2a33.up.railway.app",  # Old frontend URL
         "http://localhost:5173",  # For local development
-        "http://localhost:3000",   # Alternative local dev port
-        "*"  # For testing - remove in production
+        "http://localhost:3000"   # Alternative local dev port
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# ✅ Mount graph images folder
+# Use relative paths that work in Docker
 GRAPH_DIR = os.path.join(os.path.dirname(__file__), "predicted_graphs")
 os.makedirs(GRAPH_DIR, exist_ok=True)
 app.mount("/graphs", StaticFiles(directory=GRAPH_DIR), name="graphs")
 
-# ✅ Health check route
 @app.get("/health")
 def health_check():
     return {"status": "API is running"}
 
-# ✅ Plant Disease Prediction
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
@@ -59,7 +54,6 @@ async def predict(file: UploadFile = File(...)):
     except Exception as e:
         return {"error": str(e)}
 
-# ✅ Market Price Prediction
 @app.get("/market-predictions")
 def get_predictions_for_graph():
     try:
@@ -68,7 +62,7 @@ def get_predictions_for_graph():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# ✅ Soil Type Prediction
+# Use relative paths for deployment
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "soil_classifier.keras")
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "class_names.json")
 model = load_model(MODEL_PATH)
@@ -96,7 +90,7 @@ soil_info = {
         "crops": ["Tomatoes", "Wheat", "Sugarcane"],
         "care": ["Maintain pH level", "Use organic fertilizers", "Avoid compaction"],
     },
-    # Add more if needed
+    
 }
 
 @app.post("/predict-soil")
@@ -113,7 +107,7 @@ async def predict_soil(file: UploadFile = File(...)):
         predicted_class = class_names[predicted_index]
         confidence = float(prediction[predicted_index]) * 100
 
-        # 🔍 Debugging log
+        
         print("🔍 Raw prediction:", prediction)
         print("📌 Predicted index:", predicted_index)
         print("📌 Predicted class:", predicted_class)
@@ -137,7 +131,6 @@ async def predict_soil(file: UploadFile = File(...)):
         return {"error": str(e)}
 
 
-# ✅ Print all registered routes
 @app.on_event("startup")
 async def list_routes():
     print("\n📋 Registered Routes:")

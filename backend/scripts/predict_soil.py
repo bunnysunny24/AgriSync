@@ -4,7 +4,7 @@ from PIL import Image
 import os
 
 # ✅ Path to the saved model
-MODEL_PATH = r"D:\Bunny\AgriSync\backend\models\soil_classifier.keras"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "soil_classifier.keras")
 
 # ✅ Class names (must match training data)
 CLASS_NAMES = ['Alluvial soil', 'Black Soil', 'Clay soil', 'Red soil']

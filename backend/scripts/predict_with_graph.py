@@ -5,9 +5,9 @@ import pandas as pd
 import numpy as np
 import os
 
-MODEL_DIR = r"D:\Bunny\AgriSync\backend\models"
-DATA_DIR = r"D:\Bunny\AgriSync\backend\processed_data"
-GRAPH_DIR = r"D:\Bunny\AgriSync\backend\scripts\predicted_graphs"
+MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "processed_data")
+GRAPH_DIR = os.path.join(os.path.dirname(__file__), "predicted_graphs")
 os.makedirs(GRAPH_DIR, exist_ok=True)
 
 models = {

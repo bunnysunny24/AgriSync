@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
 import os
 
-MODEL_PATH = r"D:\Bunny\AgriSync\backend\models\plantdoc_best.keras"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "plantdoc_best.keras")
 model = tf.keras.models.load_model(MODEL_PATH)
 
 
