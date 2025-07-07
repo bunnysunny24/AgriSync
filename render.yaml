@@ -5,9 +5,12 @@ services:
     region: oregon
     plan: free
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && python main.py
+    startCommand: cd backend && python start.py
     envVars:
       - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: PORT
+        value: 10000
         value: 3.11.9
       - key: PIP_NO_CACHE_DIR
         value: 1

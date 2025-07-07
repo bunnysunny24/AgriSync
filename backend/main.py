@@ -12,19 +12,77 @@ from PIL import Image
 from fastapi.responses import JSONResponse
 import io
 import numpy as np
-from tensorflow.keras.models import load_model
 import json
 import sys
+import traceback
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Add scripts directory to Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
 
-# Import prediction functions
-from predict_plantdoc import predict_disease
-from predict_with_graph import get_price_predictions
-from predict_soil import predict_soil_type
+# Global variables for lazy loading
+soil_model = None
+class_names = None
+plantdoc_predict_func = None
+price_predict_func = None
 
 app = FastAPI(title="AgriSync API", version="1.0.0")
+
+# ✅ Lazy loading functions
+def load_soil_model():
+    """Load soil classification model lazily"""
+    global soil_model, class_names
+    if soil_model is None:
+        try:
+            from tensorflow.keras.models import load_model
+            MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "soil_classifier.keras")
+            LABELS_PATH = os.path.join(os.path.dirname(__file__), "models", "class_names.json")
+            
+            logger.info(f"Loading soil model from: {MODEL_PATH}")
+            soil_model = load_model(MODEL_PATH)
+            
+            with open(LABELS_PATH, "r") as f:
+                class_names = json.load(f)
+            
+            logger.info(f"Loaded soil model with classes: {class_names}")
+            
+        except Exception as e:
+            logger.error(f"Failed to load soil model: {str(e)}")
+            raise e
+    
+    return soil_model, class_names
+
+def load_plantdoc_predictor():
+    """Load plant disease predictor lazily"""
+    global plantdoc_predict_func
+    if plantdoc_predict_func is None:
+        try:
+            from predict_plantdoc import predict_disease
+            plantdoc_predict_func = predict_disease
+            logger.info("Loaded plant disease predictor")
+        except Exception as e:
+            logger.error(f"Failed to load plant disease predictor: {str(e)}")
+            raise e
+    
+    return plantdoc_predict_func
+
+def load_price_predictor():
+    """Load price predictor lazily"""
+    global price_predict_func
+    if price_predict_func is None:
+        try:
+            from predict_with_graph import get_price_predictions
+            price_predict_func = get_price_predictions
+            logger.info("Loaded price predictor")
+        except Exception as e:
+            logger.error(f"Failed to load price predictor: {str(e)}")
+            raise e
+    
+    return price_predict_func
 
 # ✅ CORS for frontend
 app.add_middleware(
@@ -56,13 +114,27 @@ def health_check():
     return {"status": "API is running"}
 
 @app.get("/healthz")
-def health_check_render():
-    return {"status": "healthy", "message": "AgriSync API is running"}
+def health_check_detailed():
+    """Detailed health check with model status"""
+    status = {
+        "status": "healthy",
+        "message": "AgriSync API is running",
+        "version": "1.0.0",
+        "models": {
+            "soil_model": soil_model is not None,
+            "plantdoc_predictor": plantdoc_predict_func is not None,
+            "price_predictor": price_predict_func is not None
+        }
+    }
+    return status
 
 # ✅ Plant Disease Prediction
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
+        # Load predictor on first use
+        predict_func = load_plantdoc_predictor()
+        
         temp_dir = "temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)
 
@@ -70,35 +142,40 @@ async def predict(file: UploadFile = File(...)):
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        result = predict_disease(file_path)
-        os.remove(file_path)
+        result = predict_func(file_path)
+        
+        # Clean up
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            
         return result
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Plant disease prediction error: {str(e)}")
+        logger.error(traceback.format_exc())
+        return {
+            "error": f"Plant disease prediction failed: {str(e)}",
+            "prediction": "Unable to predict",
+            "confidence": 0.0
+        }
 
 # ✅ Market Price Prediction
 @app.get("/market-predictions")
 def get_predictions_for_graph():
     try:
-        results = get_price_predictions()
+        # Load predictor on first use
+        predict_func = load_price_predictor()
+        results = predict_func()
         return {"status": "success", "data": results}
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        logger.error(f"Market prediction error: {str(e)}")
+        logger.error(traceback.format_exc())
+        return {
+            "status": "error", 
+            "message": f"Market prediction failed: {str(e)}",
+            "data": []
+        }
 
 # ✅ Soil Type Prediction
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "soil_classifier.keras")
-LABELS_PATH = os.path.join(os.path.dirname(__file__), "models", "class_names.json")
-
-try:
-    model = load_model(MODEL_PATH)
-    with open(LABELS_PATH, "r") as f:
-        class_names = json.load(f)
-    print("📚 Loaded class names:", class_names)
-except Exception as e:
-    print(f"❌ Error loading soil model: {e}")
-    model = None
-    class_names = []
-
 IMG_SIZE = (180, 180)
 
 soil_info = {
@@ -122,25 +199,24 @@ soil_info = {
 @app.post("/predict-soil")
 async def predict_soil(file: UploadFile = File(...)):
     try:
-        if model is None:
-            return {"error": "Soil classifier model not loaded"}
-            
+        # Load model on first use
+        model, class_names = load_soil_model()
+        
         image = Image.open(file.file).convert("RGB")
         image = image.resize(IMG_SIZE)
         image_array = np.expand_dims(np.array(image) / 255.0, axis=0)
-        print("🖼️ Processed image shape:", image_array.shape)
+        logger.info(f"Processed image shape: {image_array.shape}")
 
         prediction = model.predict(image_array)[0]
-        print("🔍 Raw prediction probabilities:", prediction)
+        logger.info(f"Raw prediction probabilities: {prediction}")
         predicted_index = np.argmax(prediction)
         predicted_class = class_names[predicted_index]
         confidence = float(prediction[predicted_index]) * 100
 
         # 🔍 Debugging log
-        print("🔍 Raw prediction:", prediction)
-        print("📌 Predicted index:", predicted_index)
-        print("📌 Predicted class:", predicted_class)
-        print("📈 Confidence:", confidence)
+        logger.info(f"Predicted index: {predicted_index}")
+        logger.info(f"Predicted class: {predicted_class}")
+        logger.info(f"Confidence: {confidence}")
 
         info = soil_info.get(predicted_class, {
             "notes": "No additional info available.",
@@ -157,17 +233,63 @@ async def predict_soil(file: UploadFile = File(...)):
         }
 
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Soil prediction error: {str(e)}")
+        logger.error(traceback.format_exc())
+        return {
+            "error": f"Soil prediction failed: {str(e)}",
+        }
+
+    except Exception as e:
+        logger.error(f"Soil prediction error: {str(e)}")
+        logger.error(traceback.format_exc())
+        return {
+            "error": f"Soil prediction failed: {str(e)}",
+            "prediction": "Unable to predict",
+            "confidence": 0.0,
+            "notes": "Error occurred during prediction",
+            "crops": [],
+            "care": []
+        }
 
 # ✅ Print all registered routes on startup
 @app.on_event("startup")
 async def startup_event():
-    print("\n📋 AgriSync API Starting...")
-    print("📋 Registered Routes:")
+    logger.info("\n📋 AgriSync API Starting...")
+    logger.info("📋 Registered Routes:")
     for route in app.routes:
         if hasattr(route, 'path'):
-            print(f"➡️  {route.path}")
-    print("✅ AgriSync API is ready!")
+            logger.info(f"➡️  {route.path}")
+    
+    # Try to load models on startup (optional - will load on first use if this fails)
+    try:
+        logger.info("🔄 Attempting to pre-load models...")
+        
+        # Try to load soil model
+        try:
+            load_soil_model()
+            logger.info("✅ Soil model loaded successfully")
+        except Exception as e:
+            logger.warning(f"⚠️ Could not pre-load soil model: {e}")
+        
+        # Try to load plant disease predictor
+        try:
+            load_plantdoc_predictor()
+            logger.info("✅ Plant disease predictor loaded successfully")
+        except Exception as e:
+            logger.warning(f"⚠️ Could not pre-load plant disease predictor: {e}")
+        
+        # Try to load price predictor
+        try:
+            load_price_predictor()
+            logger.info("✅ Price predictor loaded successfully")
+        except Exception as e:
+            logger.warning(f"⚠️ Could not pre-load price predictor: {e}")
+            
+    except Exception as e:
+        logger.warning(f"⚠️ Model pre-loading failed: {e}")
+        logger.info("📝 Models will be loaded on first use")
+    
+    logger.info("✅ AgriSync API is ready!")
 
 if __name__ == "__main__":
     import uvicorn

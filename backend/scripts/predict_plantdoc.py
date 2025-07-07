@@ -3,9 +3,29 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "plantdoc_best.keras")
-model = tf.keras.models.load_model(MODEL_PATH)
+
+# Global model variable for lazy loading
+_model = None
+
+def load_model():
+    """Load the plant disease model lazily"""
+    global _model
+    if _model is None:
+        try:
+            logger.info(f"Loading plant disease model from: {MODEL_PATH}")
+            _model = tf.keras.models.load_model(MODEL_PATH)
+            logger.info("Plant disease model loaded successfully")
+        except Exception as e:
+            logger.error(f"Failed to load plant disease model: {str(e)}")
+            raise e
+    return _model
 
 
 CLASS_LABELS = [
@@ -20,6 +40,8 @@ HEALTHY_CLASSES = {"Apple leaf", "Tomato leaf", "Bell_pepper leaf", "Peach leaf"
 
 def predict_disease(image_path):
     try:
+        # Load model on first use
+        model = load_model()
         
         image_path = os.path.normpath(image_path)
 
@@ -49,6 +71,7 @@ def predict_disease(image_path):
         }
 
     except Exception as e:
+        logger.error(f"Plant disease prediction error: {str(e)}")
         return {"error": str(e)}
 
 
